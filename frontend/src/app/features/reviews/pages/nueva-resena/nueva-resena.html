@@ -1,0 +1,95 @@
+@if (isLoadingReview) {
+  <p class="review-form-state">Cargando reseña...</p>
+} @else if (isLoadingMovie) {
+  <p class="review-form-state">Cargando película...</p>
+} @else if (loadError) {
+  <section class="review-form-state" role="alert">
+    <p>{{ loadError }}</p>
+    <a class="review-back-link" routerLink="/club/peliculas">Volver a películas</a>
+  </section>
+} @else if (movie) {
+  <section class="new-review-page" aria-labelledby="new-review-title">
+    <a class="review-back-link" [routerLink]="movieDetailRoute">← Volver a la película</a>
+
+    <article class="new-review-card">
+      <header class="new-review-header">
+        <p class="section-eyebrow">{{ pageEyebrow }}</p>
+        <div class="movie-context">
+          <img
+            [src]="movie.imageUrl"
+            [alt]="'Póster de ' + movie.titulo"
+            (error)="onPosterError($event)"
+          >
+          <div>
+            <h1 id="new-review-title">{{ movie.titulo }}</h1>
+            <p>{{ movie.director }} · {{ movie.anio }}</p>
+          </div>
+        </div>
+      </header>
+
+      <form class="review-form" [formGroup]="reviewForm" (ngSubmit)="onSubmit()" novalidate>
+        <fieldset class="rating-field" [disabled]="isSubmitting">
+          <legend>Puntuación</legend>
+          <div class="rating-options">
+            @for (rating of ratingOptions; track rating) {
+              <label class="rating-option">
+                <input type="radio" formControlName="puntuacion" [value]="rating">
+                <span>{{ rating }}</span>
+              </label>
+            }
+          </div>
+          @if (reviewForm.controls.puntuacion.invalid && reviewForm.controls.puntuacion.touched) {
+            <p class="field-error">Seleccioná una puntuación.</p>
+          }
+        </fieldset>
+
+        <label class="review-field">
+          <span>Frase destacada</span>
+          <input
+            type="text"
+            formControlName="frase_destacada"
+            maxlength="220"
+            placeholder="Una idea breve que concentre tu mirada"
+            [class.is-invalid]="
+              reviewForm.controls.frase_destacada.invalid &&
+              reviewForm.controls.frase_destacada.touched
+            "
+          >
+          <small class="field-counter">{{ highlightedQuoteLength }}/220</small>
+          @if (
+            reviewForm.controls.frase_destacada.hasError('maxlength') &&
+            reviewForm.controls.frase_destacada.touched
+          ) {
+            <p class="field-error">La frase destacada no puede superar los 220 caracteres.</p>
+          }
+        </label>
+
+        <label class="review-field">
+          <span>Reseña</span>
+          <textarea
+            formControlName="contenido"
+            rows="10"
+            placeholder="Escribí tu lectura de la película"
+            [class.is-invalid]="
+              reviewForm.controls.contenido.invalid && reviewForm.controls.contenido.touched
+            "
+          ></textarea>
+          @if (reviewForm.controls.contenido.invalid && reviewForm.controls.contenido.touched) {
+            <p class="field-error">Escribí tu reseña.</p>
+          }
+        </label>
+
+        @if (submitError) {
+          <p class="submit-error" role="alert">{{ submitError }}</p>
+        }
+
+        <div class="form-actions">
+          <a class="btn-secondary" [routerLink]="movieDetailRoute">Cancelar</a>
+          <button class="btn-primary" type="submit" [disabled]="reviewForm.invalid || isSubmitting">
+            {{ submitButtonText }}
+          </button>
+        </div>
+      </form>
+    </article>
+  </section>
+}

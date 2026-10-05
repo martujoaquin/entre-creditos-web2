@@ -1,0 +1,139 @@
+<article
+  class="review"
+  [class.review--movie-detail]="isMovieDetail"
+  [class.review--home]="isHome"
+  [class.review--my-reviews]="isMyReviews"
+>
+  @if (!isMovieDetail && !isMyReviews && review.movie) {
+    <div class="review-image">
+      <button
+        class="review-image__button"
+        type="button"
+        [attr.aria-label]="'Ver detalle de ' + review.movie.title"
+        (click)="onMovieSelected()"
+      >
+        @if (movieImageUrl) {
+          <img
+            [src]="movieImageUrl"
+            [alt]="review.movie.imageAlt"
+            (error)="onMovieImageError()"
+          >
+        }
+      </button>
+    </div>
+  }
+
+  <div class="review-body">
+    @if (isMyReviews && review.movie) {
+      <div class="my-reviews-header">
+        <div class="my-reviews-movie-info" style="min-width: 0;">
+          <span
+            class="my-reviews-movie-eyebrow"
+            style="display: block; margin: 0 0 7px; color: var(--color-primary); font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;"
+          >Película</span>
+          <h3><button class="my-reviews-movie-title" type="button" (click)="onMovieSelected()">{{ review.movie.title }}</button></h3>
+          <p class="my-reviews-movie-meta">{{ review.movie.director }} · {{ review.movie.year }}</p>
+          @if (review.createdAt) {
+            <time
+              class="my-reviews-date"
+              [attr.datetime]="review.createdAt"
+              style="display: block; margin: 7px 0 0; color: var(--color-text-disabled); font-size: 13px;"
+            >{{ review.createdAt | date: 'dd/MM/yyyy' }}</time>
+          }
+        </div>
+
+        <div
+          class="my-reviews-rating"
+          [attr.aria-label]="'Puntuación: ' + review.rating + ' sobre 5'"
+          style="position: static; display: inline-flex; align-items: center; gap: 6px; width: fit-content; min-height: 30px; padding: 0 10px; border: 1px solid rgba(74, 141, 255, 0.38); border-radius: var(--radius-button); background: rgba(74, 141, 255, 0.1); color: var(--color-primary-hover); font-size: 12px; font-weight: 700;"
+        >
+          <span class="clapper-icon" aria-hidden="true"></span>
+          <span>{{ review.rating }}/5</span>
+        </div>
+      </div>
+
+      <div class="movie-rule" aria-hidden="true"></div>
+    } @else if (!isMovieDetail && review.movie) {
+      <header class="review-header">
+        <h3 class="review-title">
+          <button type="button" (click)="onMovieSelected()">{{ review.movie.title }}</button>
+          <span>{{ review.movie.year }}</span>
+        </h3>
+        <p>Dirigida por {{ review.movie.director }}</p>
+      </header>
+
+      <div class="movie-rule" aria-hidden="true"></div>
+      <div class="rating-badge rating-badge--general-content" [attr.aria-label]="'Puntuación: ' + review.rating + ' sobre 5'">
+        <span class="clapper-icon" aria-hidden="true"></span>
+        <span>{{ review.rating }}/5</span>
+      </div>
+    } @else {
+      <div class="review-kicker">
+        @if (isOwnReview) {
+          <span class="own-review-label">MI RESEÑA</span>
+        }
+        <div class="rating-badge rating-badge--inline" [attr.aria-label]="'Puntuación: ' + review.rating + ' sobre 5'">
+          <span class="clapper-icon" aria-hidden="true"></span>
+          <span>{{ review.rating }}/5</span>
+        </div>
+      </div>
+    }
+
+    @if (review.highlightedQuote) {
+      <p class="review-quote">“{{ review.highlightedQuote }}”</p>
+    }
+    <p
+      #excerptElement
+      class="fragment"
+      [id]="excerptId"
+      [class.fragment--collapsed]="showExpandControl && !isExpanded"
+    >“{{ review.excerpt }}”</p>
+
+    @if (showExpandControl) {
+      <div class="review-expand-slot">
+        @if (canExpand) {
+          <button
+            class="review-expand-button"
+            type="button"
+            [attr.aria-expanded]="isExpanded"
+            [attr.aria-controls]="excerptId"
+            (click)="toggleExpanded()"
+          >
+            {{ isExpanded ? 'Mostrar menos' : 'Ver reseña completa' }}
+          </button>
+        }
+      </div>
+    }
+
+    @if (!isMyReviews) {
+      <footer class="review-footer">
+        <div class="review-author">
+          @if (avatarUrl) {
+            <img
+              [src]="avatarUrl"
+              [alt]="'Avatar de ' + review.author.name"
+              (error)="onAvatarError()"
+            >
+          } @else {
+            <span aria-hidden="true">{{ authorInitial }}</span>
+          }
+          <p>{{ review.author.name }}</p>
+        </div>
+
+        @if ((isMovieDetail || isHome) && review.createdAt) {
+          <time [attr.datetime]="review.createdAt">{{ review.createdAt | date: 'dd/MM/yyyy' }}</time>
+        }
+      </footer>
+    }
+
+    @if (showActions) {
+      <div class="review-actions" [class.review-actions--own]="isOwnReview" aria-label="Acciones de reseña">
+        @if (isOwnReview) {
+          <button type="button" (click)="onEdit()">Editar</button>
+          <button type="button" (click)="onDelete()">Eliminar</button>
+        }
+        <button type="button" (click)="onShare()">Compartir</button>
+      </div>
+    }
+  </div>
+</article>

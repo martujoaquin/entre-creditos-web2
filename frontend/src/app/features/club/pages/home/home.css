@@ -1,0 +1,174 @@
+.club-home {
+  width: min(100%, 1240px);
+  margin: 0 auto;
+}
+
+.club-home__welcome {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 0 0 42px;
+  text-align: center;
+}
+
+.club-home__welcome .section-title {
+  max-width: 760px;
+}
+
+.club-home__intro {
+  max-width: 680px;
+  margin: 22px auto 0;
+  color: var(--color-text-secondary);
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+.club-home__welcome .btn-primary {
+  width: auto;
+  margin-top: 28px;
+}
+
+.club-home > .content-divider {
+  margin-top: 42px;
+  margin-bottom: 42px;
+}
+
+.home-section {
+  margin-top: 0;
+}
+
+.home-section--movies {
+  margin-top: 0;
+}
+
+.home-section__header {
+  max-width: 720px;
+  margin: 0 auto 28px;
+  text-align: center;
+}
+
+.home-section__header h2,
+.home-empty h3 {
+  margin: 0;
+  color: var(--color-text);
+  font-family: var(--font-editorial);
+  font-size: 36px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.12;
+}
+
+.home-section__header p,
+.home-section__state,
+.home-empty p {
+  margin: 12px auto 0;
+  color: var(--color-text-secondary);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.home-section__state {
+  max-width: 620px;
+  text-align: center;
+}
+
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 22px;
+}
+
+.movies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 24px;
+}
+
+.home-section__link {
+  display: flex;
+  width: fit-content;
+  margin: 24px auto 0;
+  color: var(--color-primary-hover);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.home-section__link:hover,
+.home-section__link:focus-visible {
+  color: var(--color-accent);
+}
+
+.home-empty {
+  max-width: 620px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.home-empty h3 {
+  font-size: 30px;
+}
+
+.home-empty .btn-primary {
+  width: auto;
+  margin-top: 22px;
+}
+
+@media (max-width: 900px) {
+  .reviews-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .movies-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (max-width: 700px) {
+  .club-home__welcome {
+    padding: 0 0 34px;
+  }
+
+  .club-home__intro {
+    font-size: 16px;
+  }
+
+  .home-section,
+  .home-section--movies {
+    margin-top: 0;
+  }
+
+  .club-home > .content-divider {
+    margin-top: 34px;
+    margin-bottom: 34px;
+  }
+
+  .home-section__header {
+    margin-bottom: 22px;
+  }
+
+  .home-section__header h2 {
+    font-size: 30px;
+  }
+
+  .home-empty h3 {
+    font-size: 26px;
+  }
+
+  .movies-grid {
+    grid-template-columns: repeat(auto-fill, minmax(142px, 1fr));
+    gap: 18px;
+  }
+
+  .reviews-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 360px) {
+  .movies-grid {
+    grid-template-columns: 1fr;
+  }
+}

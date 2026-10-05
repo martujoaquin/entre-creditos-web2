@@ -1,0 +1,25 @@
+@import '../login/login.css';
+
+.password-requirements {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  color: var(--color-text-disabled);
+  font-size: 13px;
+  line-height: 1.35;
+  list-style: none;
+}
+
+.password-requirements--error {
+  color: #f0aaaa;
+}
+
+.password-requirements li {
+  display: flex;
+  gap: 7px;
+}
+
+.password-requirements__item--met {
+  color: #76c99a;
+}

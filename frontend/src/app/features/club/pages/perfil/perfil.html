@@ -1,0 +1,247 @@
+<section class="profile-page">
+  <header class="profile-page__header">
+    <p class="section-eyebrow">Tu lugar en el club</p>
+    <h1 class="section-title">Perfil</h1>
+  </header>
+
+  @if (isLoading) {
+    <p class="profile-state">Cargando perfil...</p>
+  } @else if (loadError) {
+    <div class="profile-state profile-state--error" role="alert">
+      <p>{{ loadError }}</p>
+      <button class="btn-secondary" type="button" (click)="loadProfile()">Reintentar</button>
+    </div>
+  } @else if (usuario && estadisticas) {
+    <article class="profile-card">
+      <div class="profile-card__avatar-wrap">
+        <img
+          class="profile-card__avatar"
+          [src]="avatarUrl"
+          [alt]="'Avatar de ' + usuario.nombre_completo"
+          (error)="onAvatarError()"
+        >
+      </div>
+
+      <div class="profile-card__body">
+        <h2>{{ usuario.nombre_completo }}</h2>
+        <p class="profile-card__email">{{ usuario.email }}</p>
+        <p class="profile-card__member">Miembro desde {{ miembroDesde }}</p>
+      </div>
+
+      <button class="btn-secondary profile-card__edit" type="button" (click)="startEditing()">
+        Editar perfil
+      </button>
+    </article>
+
+    @if (isEditing) {
+      <form class="profile-form" (ngSubmit)="saveProfile()" novalidate>
+        <h2>Datos del perfil</h2>
+
+        <div class="profile-form__avatar">
+          <img
+            class="profile-form__preview"
+            [src]="avatarUrl"
+            [alt]="'Vista previa del avatar de ' + usuario.nombre_completo"
+            (error)="onAvatarError()"
+          >
+
+          <div class="profile-form__file">
+            <label for="avatar">Cambiar foto</label>
+            <input
+              id="avatar"
+              name="avatar"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              (change)="onAvatarSelected($event)"
+            >
+            <span>{{ selectedAvatarName || 'Ningún archivo seleccionado' }}</span>
+          </div>
+        </div>
+
+        <label class="profile-form__field" for="nombre_completo">
+          <span>Nombre completo</span>
+          <input
+            id="nombre_completo"
+            name="nombre_completo"
+            type="text"
+            required
+            maxlength="100"
+            autocomplete="name"
+            [(ngModel)]="nombreCompleto"
+            [disabled]="isSaving"
+          >
+        </label>
+
+        @if (formError) {
+          <p class="profile-form__error" role="alert">{{ formError }}</p>
+        }
+
+        <div class="profile-form__actions">
+          <button class="btn-primary" type="submit" [disabled]="isSaving">
+            {{ isSaving ? 'Guardando...' : 'Guardar cambios' }}
+          </button>
+          <button class="btn-secondary" type="button" [disabled]="isSaving" (click)="cancelEditing()">
+            Cancelar
+          </button>
+        </div>
+      </form>
+
+      <form class="profile-form profile-form--password" (ngSubmit)="changePassword()" novalidate>
+        <h2>Cambiar contraseña</h2>
+
+        <label class="profile-form__field" for="password_actual">
+          <span>Contraseña actual</span>
+          <div class="profile-password">
+            <input
+              #passwordActualInput
+              id="password_actual"
+              name="password_actual"
+              [type]="showPasswordActual ? 'text' : 'password'"
+              required
+              autocomplete="current-password"
+              [(ngModel)]="passwordActual"
+              [disabled]="isChangingPassword"
+            >
+            <button
+              class="profile-password__toggle"
+              type="button"
+              [attr.aria-label]="showPasswordActual ? 'Ocultar contraseña actual' : 'Mostrar contraseña actual'"
+              (click)="togglePasswordActualVisibility(passwordActualInput)"
+            >
+              @if (showPasswordActual) {
+                <svg class="profile-password__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M3 3l18 18"></path>
+                  <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"></path>
+                  <path d="M9.9 4.2A10.9 10.9 0 0 1 12 4c5 0 8.8 4.2 10 8a12.6 12.6 0 0 1-3 4.7"></path>
+                  <path d="M6.6 6.6A12.4 12.4 0 0 0 2 12c1.2 3.8 5 8 10 8 1.5 0 2.9-.4 4.1-1"></path>
+                </svg>
+              } @else {
+                <svg class="profile-password__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M2 12c1.2-3.8 5-8 10-8s8.8 4.2 10 8c-1.2 3.8-5 8-10 8s-8.8-4.2-10-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              }
+            </button>
+          </div>
+        </label>
+
+        <label class="profile-form__field" for="password_nueva">
+          <span>Nueva contraseña</span>
+          <div class="profile-password">
+            <input
+              #passwordNuevaInput
+              id="password_nueva"
+              name="password_nueva"
+              [type]="showPasswordNueva ? 'text' : 'password'"
+              required
+              autocomplete="new-password"
+              [(ngModel)]="passwordNueva"
+              [disabled]="isChangingPassword"
+            >
+            <button
+              class="profile-password__toggle"
+              type="button"
+              [attr.aria-label]="showPasswordNueva ? 'Ocultar nueva contraseña' : 'Mostrar nueva contraseña'"
+              (click)="togglePasswordNuevaVisibility(passwordNuevaInput)"
+            >
+              @if (showPasswordNueva) {
+                <svg class="profile-password__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M3 3l18 18"></path>
+                  <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"></path>
+                  <path d="M9.9 4.2A10.9 10.9 0 0 1 12 4c5 0 8.8 4.2 10 8a12.6 12.6 0 0 1-3 4.7"></path>
+                  <path d="M6.6 6.6A12.4 12.4 0 0 0 2 12c1.2 3.8 5 8 10 8 1.5 0 2.9-.4 4.1-1"></path>
+                </svg>
+              } @else {
+                <svg class="profile-password__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M2 12c1.2-3.8 5-8 10-8s8.8 4.2 10 8c-1.2 3.8-5 8-10 8s-8.8-4.2-10-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              }
+            </button>
+          </div>
+          <ul class="profile-password-help" [class.profile-password-help--error]="passwordHelpHasError">
+            @for (requirement of passwordRequirements; track requirement.label) {
+              <li [class.profile-password-help__item--met]="requirement.met">
+                <span aria-hidden="true">{{ requirement.met ? '✓' : '✗' }}</span>
+                {{ requirement.label }}
+              </li>
+            }
+          </ul>
+        </label>
+
+        <label class="profile-form__field" for="confirm_password_nueva">
+          <span>Confirmar nueva contraseña</span>
+          <div class="profile-password">
+            <input
+              #confirmPasswordNuevaInput
+              id="confirm_password_nueva"
+              name="confirm_password_nueva"
+              [type]="showConfirmPasswordNueva ? 'text' : 'password'"
+              required
+              autocomplete="new-password"
+              [(ngModel)]="confirmPasswordNueva"
+              [disabled]="isChangingPassword"
+            >
+            <button
+              class="profile-password__toggle"
+              type="button"
+              [attr.aria-label]="showConfirmPasswordNueva ? 'Ocultar confirmación' : 'Mostrar confirmación'"
+              (click)="toggleConfirmPasswordNuevaVisibility(confirmPasswordNuevaInput)"
+            >
+              @if (showConfirmPasswordNueva) {
+                <svg class="profile-password__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M3 3l18 18"></path>
+                  <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"></path>
+                  <path d="M9.9 4.2A10.9 10.9 0 0 1 12 4c5 0 8.8 4.2 10 8a12.6 12.6 0 0 1-3 4.7"></path>
+                  <path d="M6.6 6.6A12.4 12.4 0 0 0 2 12c1.2 3.8 5 8 10 8 1.5 0 2.9-.4 4.1-1"></path>
+                </svg>
+              } @else {
+                <svg class="profile-password__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M2 12c1.2-3.8 5-8 10-8s8.8 4.2 10 8c-1.2 3.8-5 8-10 8s-8.8-4.2-10-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              }
+            </button>
+          </div>
+        </label>
+
+        @if (passwordError) {
+          <p class="profile-form__error" role="alert">{{ passwordError }}</p>
+        }
+
+        @if (passwordSuccess) {
+          <p class="profile-form__success" role="status">{{ passwordSuccess }}</p>
+        }
+
+        <div class="profile-form__actions">
+          <button class="btn-primary" type="submit" [disabled]="isChangingPassword">
+            {{ isChangingPassword ? 'Actualizando...' : 'Actualizar contraseña' }}
+          </button>
+        </div>
+      </form>
+    }
+
+    <section class="profile-stats" aria-label="Estadísticas del perfil">
+      <article class="profile-stat">
+        <span>Reseñas publicadas</span>
+        <strong>{{ estadisticas.cantidad_resenas }}</strong>
+      </article>
+      <article class="profile-stat">
+        <span>Calificación promedio</span>
+        <strong>{{ promedioPuntuacion }}</strong>
+      </article>
+      <article class="profile-stat">
+        <span>Género más reseñado</span>
+        <strong>{{ generoMasResenado }}</strong>
+      </article>
+      <article class="profile-stat">
+        <span>Reseñas compartidas</span>
+        <strong>{{ estadisticas.cantidad_compartidas }}</strong>
+      </article>
+    </section>
+
+    <div class="profile-cta">
+      <a class="btn-primary" routerLink="/club/mis-resenas">Mis reseñas</a>
+    </div>
+  }
+</section>

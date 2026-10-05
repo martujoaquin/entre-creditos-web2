@@ -1,0 +1,260 @@
+.my-reviews-page {
+  width: 100%;
+}
+
+.my-reviews-page__header {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.my-reviews-page__state,
+.my-reviews-page__empty p {
+  margin: 24px auto 0;
+  color: var(--color-text-secondary);
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+.my-reviews-page__state {
+  font-size: 16px;
+  text-align: center;
+}
+
+.my-reviews-page__state p {
+  margin: 0;
+}
+
+.my-reviews-page__state button,
+.my-reviews-page__empty a {
+  margin-top: 16px;
+}
+
+.my-reviews-page__state button {
+  min-height: 40px;
+  padding: 0 18px;
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-button);
+  background: rgba(11, 18, 36, 0.58);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.my-reviews-page__empty {
+  max-width: 620px;
+  margin: 36px auto 0;
+  padding: 28px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
+  background: rgba(255, 255, 255, 0.035);
+  text-align: center;
+}
+
+.my-reviews-page__empty h2,
+.review-modal h2 {
+  margin: 0;
+  color: var(--color-text);
+  font-family: var(--font-editorial);
+  font-size: 32px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.1;
+}
+
+.my-reviews-page__empty p {
+  font-size: 16px;
+}
+
+.my-reviews-list {
+  display: grid;
+  gap: 28px;
+  max-width: 900px;
+  margin: 30px auto 0;
+}
+
+.my-review {
+  display: block;
+}
+
+:host ::ng-deep .my-reviews-header {
+  align-items: start;
+}
+
+:host ::ng-deep .my-reviews-rating {
+  align-self: start;
+  flex: 0 0 auto;
+  min-height: 0 !important;
+  padding: 8px 14px !important;
+  border-radius: 999px !important;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(5, 10, 24, 0.72);
+  backdrop-filter: blur(8px);
+}
+
+.review-modal {
+  position: relative;
+  width: min(100%, 480px);
+  padding: 30px;
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-card);
+  background: rgba(11, 18, 36, 0.96);
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.42);
+}
+
+.review-modal__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.review-modal p,
+.review-modal span {
+  display: block;
+  margin: 16px 0 0;
+  color: var(--color-text-secondary);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.review-modal__error {
+  padding: 11px 14px;
+  border: 1px solid rgba(185, 75, 75, 0.3);
+  border-radius: var(--radius-input);
+  background: rgba(122, 36, 36, 0.18);
+  color: #f0aaaa;
+}
+
+.review-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 26px;
+}
+
+.review-modal__actions button {
+  min-height: 44px;
+  padding: 0 20px;
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-button);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--color-text-secondary);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.review-modal__danger {
+  border-color: rgba(185, 75, 75, 0.48) !important;
+  background: rgba(122, 36, 36, 0.28) !important;
+  color: #f0c4c4 !important;
+}
+
+.review-modal__primary {
+  border-color: rgba(74, 123, 255, 0.6) !important;
+  background: rgba(74, 123, 255, 0.22) !important;
+  color: #c7d6ff !important;
+}
+
+.my-reviews-page__state button:hover,
+.my-reviews-page__state button:focus-visible {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.share-modal__search input {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 8px;
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-input);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--color-text);
+  font: inherit;
+  padding: 0 14px;
+}
+
+.share-modal__users {
+  max-height: 320px;
+  overflow-y: auto;
+  margin-top: 18px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-input);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.share-modal__user {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 66px;
+  padding: 12px 14px;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.share-modal__user + .share-modal__user {
+  border-top: 1px solid var(--border-subtle);
+}
+
+.share-modal__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  overflow: hidden;
+  border-radius: 50%;
+  background: rgba(74, 123, 255, 0.18);
+  color: var(--color-accent);
+  font-weight: 800;
+}
+
+.share-modal__name {
+  overflow-wrap: anywhere;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+@media (max-width: 700px) {
+  .my-reviews-page__empty {
+    padding: 24px 20px;
+  }
+
+  .my-reviews-list {
+    margin-top: 28px;
+  }
+
+  .review-modal {
+    padding: 28px 22px 22px;
+  }
+
+  .review-modal__actions {
+    flex-direction: column;
+  }
+
+  .review-modal__actions button {
+    width: 100%;
+  }
+}

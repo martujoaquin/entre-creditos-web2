@@ -1,0 +1,177 @@
+<section class="login-page">
+  <p class="login-subtitle">Comenzá a compartir tus historias de cine.</p>
+
+  <article class="login-card">
+    <h1>Crear cuenta</h1>
+
+    <form class="login-form" [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
+      <label class="login-field">
+        <span>Nombre completo</span>
+        <input
+          type="text"
+          name="nombre_completo"
+          formControlName="nombre_completo"
+          placeholder="Tu nombre"
+          autocomplete="name"
+          [class.is-invalid]="
+            registerForm.controls.nombre_completo.invalid &&
+            registerForm.controls.nombre_completo.touched
+          "
+        >
+        @if (
+          registerForm.controls.nombre_completo.hasError('required') &&
+          registerForm.controls.nombre_completo.touched
+        ) {
+          <small class="login-field-error">Ingresá tu nombre.</small>
+        } @else if (
+          registerForm.controls.nombre_completo.hasError('fullName') &&
+          registerForm.controls.nombre_completo.touched
+        ) {
+          <small class="login-field-error">Ingresá al menos un nombre y un apellido válidos.</small>
+        } @else {
+          <small class="login-field-help">Ingresá tu nombre y apellido.</small>
+        }
+      </label>
+
+      <label class="login-field">
+        <span>Correo electrónico</span>
+        <input
+          type="email"
+          name="email"
+          formControlName="email"
+          placeholder="tunombre@email.com"
+          autocomplete="email"
+          [class.is-invalid]="registerForm.controls.email.invalid && registerForm.controls.email.touched"
+        >
+        @if (registerForm.controls.email.invalid && registerForm.controls.email.touched) {
+          <small class="login-field-error">Ingresá un email válido.</small>
+        }
+      </label>
+
+      <label class="login-field">
+        <span>Contraseña</span>
+        <div class="password-input-wrapper">
+          <input
+            #passwordInput
+            [type]="showPassword ? 'text' : 'password'"
+            name="password"
+            formControlName="password"
+            placeholder="Creá tu contraseña"
+            autocomplete="new-password"
+            minlength="8"
+            [class.is-invalid]="
+              registerForm.controls.password.invalid && registerForm.controls.password.touched
+            "
+          >
+          <button
+            class="password-toggle"
+            type="button"
+            [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+            (click)="togglePasswordVisibility(passwordInput)"
+          >
+            @if (showPassword) {
+              <svg class="password-toggle-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M3 3l18 18"></path>
+                <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"></path>
+                <path d="M9.9 4.2A10.9 10.9 0 0 1 12 4c5 0 8.8 4.2 10 8a12.6 12.6 0 0 1-3 4.7"></path>
+                <path d="M6.6 6.6A12.4 12.4 0 0 0 2 12c1.2 3.8 5 8 10 8 1.5 0 2.9-.4 4.1-1"></path>
+              </svg>
+            } @else {
+              <svg class="password-toggle-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M2 12c1.2-3.8 5-8 10-8s8.8 4.2 10 8c-1.2 3.8-5 8-10 8s-8.8-4.2-10-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            }
+          </button>
+        </div>
+        <ul class="password-requirements" [class.password-requirements--error]="passwordHelpHasError">
+          @for (requirement of passwordRequirements; track requirement.label) {
+            <li [class.password-requirements__item--met]="requirement.met">
+              <span aria-hidden="true">{{ requirement.met ? '✓' : '✗' }}</span>
+              {{ requirement.label }}
+            </li>
+          }
+        </ul>
+        @if (
+          registerForm.controls.password.hasError('required') &&
+          registerForm.controls.password.touched
+        ) {
+          <small class="login-field-error">Ingresá una contraseña.</small>
+        } @else if (
+          registerForm.controls.password.hasError('minlength') &&
+          registerForm.controls.password.touched
+        ) {
+          <small class="login-field-error">No cumple con los requisitos.</small>
+        } @else if (
+          registerForm.controls.password.hasError('passwordPolicy') &&
+          registerForm.controls.password.touched
+        ) {
+          <small class="login-field-error">No cumple con los requisitos.</small>
+        }
+      </label>
+
+      <label class="login-field">
+        <span>Confirmar contraseña</span>
+        <div class="password-input-wrapper">
+          <input
+            #confirmPasswordInput
+            [type]="showConfirmPassword ? 'text' : 'password'"
+            name="confirm_password"
+            formControlName="confirm_password"
+            placeholder="Repetí tu contraseña"
+            autocomplete="new-password"
+            minlength="8"
+            [class.is-invalid]="
+              (registerForm.controls.confirm_password.invalid &&
+                registerForm.controls.confirm_password.touched) ||
+              passwordsDoNotMatch
+            "
+          >
+          <button
+            class="password-toggle"
+            type="button"
+            [attr.aria-label]="showConfirmPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+            (click)="toggleConfirmPasswordVisibility(confirmPasswordInput)"
+          >
+            @if (showConfirmPassword) {
+              <svg class="password-toggle-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M3 3l18 18"></path>
+                <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"></path>
+                <path d="M9.9 4.2A10.9 10.9 0 0 1 12 4c5 0 8.8 4.2 10 8a12.6 12.6 0 0 1-3 4.7"></path>
+                <path d="M6.6 6.6A12.4 12.4 0 0 0 2 12c1.2 3.8 5 8 10 8 1.5 0 2.9-.4 4.1-1"></path>
+              </svg>
+            } @else {
+              <svg class="password-toggle-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M2 12c1.2-3.8 5-8 10-8s8.8 4.2 10 8c-1.2 3.8-5 8-10 8s-8.8-4.2-10-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            }
+          </button>
+        </div>
+        @if (
+          registerForm.controls.confirm_password.hasError('required') &&
+          registerForm.controls.confirm_password.touched
+        ) {
+          <small class="login-field-error">Confirmá tu contraseña.</small>
+        } @else if (passwordsDoNotMatch) {
+          <small class="login-field-error">Las contraseñas no coinciden.</small>
+        }
+      </label>
+
+      @if (errorMessage) {
+        <p class="login-error" role="alert">{{ errorMessage }}</p>
+      }
+
+      <button class="btn-primary" type="submit" [disabled]="isLoading">
+        {{ isLoading ? 'Creando cuenta...' : 'Crear cuenta' }}
+      </button>
+    </form>
+
+    <p class="login-register">
+      ¿Ya tenés cuenta?
+      <a routerLink="/login">Iniciar sesión</a>
+    </p>
+  </article>
+
+  <a class="login-home-link" routerLink="/">← Volver al inicio</a>
+</section>

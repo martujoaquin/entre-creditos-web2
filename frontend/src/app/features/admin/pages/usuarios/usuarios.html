@@ -1,0 +1,177 @@
+<section class="admin-users">
+  <header class="admin-users__header">
+    <div>
+      <h2>Usuarios</h2>
+      <p>Gestioná los miembros y administradores del Club.</p>
+    </div>
+  </header>
+
+  @if (feedbackMessage) {
+    <p class="admin-state admin-state--success" role="status">{{ feedbackMessage }}</p>
+  }
+
+  @if (isLoading) {
+    <div class="admin-state">
+      <span class="admin-spinner" aria-hidden="true"></span>
+      <span>Cargando usuarios...</span>
+    </div>
+  } @else if (loadError) {
+    <div class="admin-state admin-state--error" role="alert">
+      <span>{{ loadError }}</span>
+      <button type="button" (click)="loadUsers()">Reintentar</button>
+    </div>
+  } @else if (users.length === 0) {
+    <p class="admin-state">No hay usuarios registrados.</p>
+  } @else {
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th scope="col">Avatar</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Email</th>
+            <th scope="col">Rol</th>
+            <th scope="col">Estado</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of users; track user.id_usuario) {
+            <tr>
+              <td>
+                <img
+                  class="admin-avatar"
+                  [src]="getAvatarUrl(user)"
+                  [alt]="'Avatar de ' + user.nombre_completo"
+                  (error)="onAvatarError(user)"
+                >
+              </td>
+              <td>
+                {{ user.nombre_completo }}
+                @if (isCurrentUser(user)) {
+                  <span class="admin-self-label">Vos</span>
+                }
+              </td>
+              <td>{{ user.email }}</td>
+              <td>
+                <span class="admin-badge" [class.admin-badge--secondary]="user.es_admin !== 1">
+                  {{ user.es_admin === 1 ? 'Administrador' : 'Usuario' }}
+                </span>
+              </td>
+              <td>
+                <span class="admin-badge" [class.admin-badge--inactive]="user.activo !== 1">
+                  {{ user.activo === 1 ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td>
+                <div class="admin-actions">
+                  <button class="admin-secondary-button" type="button" (click)="openEditModal(user)">Editar</button>
+                  @if (!isCurrentUser(user) || user.es_admin !== 1) {
+                    <button class="admin-secondary-button" type="button" (click)="openRoleModal(user)">
+                      {{ user.es_admin === 1 ? 'Quitar administrador' : 'Hacer administrador' }}
+                    </button>
+                  }
+                  @if (!isCurrentUser(user) || user.activo !== 1) {
+                    <button
+                      [class]="user.activo === 1 ? 'admin-danger-button' : 'admin-success-button'"
+                      type="button"
+                      (click)="openStatusModal(user)"
+                    >
+                      {{ user.activo === 1 ? 'Inactivar' : 'Reactivar' }}
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
+
+@if (isEditModalOpen) {
+  <div class="admin-modal-backdrop" role="presentation" (click)="closeEditModal()"></div>
+  <section class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="user-edit-title">
+    <header class="admin-modal__header">
+      <h3 id="user-edit-title">Editar usuario</h3>
+      <button type="button" aria-label="Cerrar modal" (click)="closeEditModal()">×</button>
+    </header>
+
+    <form class="admin-modal__body" (ngSubmit)="saveUser()">
+      <label>
+        <span>Nombre completo</span>
+        <input name="nombre_completo" type="text" [(ngModel)]="editName" [disabled]="isSaving">
+      </label>
+      <label>
+        <span>Email</span>
+        <input name="email" type="email" [(ngModel)]="editEmail" [disabled]="isSaving">
+      </label>
+      <label>
+        <span>Avatar</span>
+        <input
+          name="avatar"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          [disabled]="isSaving"
+          (change)="onAvatarSelected($event)"
+        >
+      </label>
+
+      @if (avatarPreviewUrl) {
+        <div class="admin-preview">
+          <img class="admin-avatar" [src]="avatarPreviewUrl" alt="Vista previa del avatar">
+          @if (selectedAvatar) {
+            <span>{{ selectedAvatar.name }}</span>
+          } @else {
+            <span>Avatar actual</span>
+          }
+        </div>
+      }
+
+      @if (formError) {
+        <p class="admin-modal__error" role="alert">{{ formError }}</p>
+      }
+
+      <footer class="admin-modal__footer">
+        <button class="admin-secondary-button" type="button" [disabled]="isSaving" (click)="closeEditModal()">Cancelar</button>
+        <button class="admin-primary-button" type="submit" [disabled]="isSaving">
+          {{ isSaving ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+      </footer>
+    </form>
+  </section>
+}
+
+@if (isActionModalOpen) {
+  <div class="admin-modal-backdrop" role="presentation" (click)="closeActionModal()"></div>
+  <section class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="user-action-title">
+    <header class="admin-modal__header">
+      <h3 id="user-action-title">{{ actionTitle }}</h3>
+      <button type="button" aria-label="Cerrar modal" (click)="closeActionModal()">×</button>
+    </header>
+
+    <div class="admin-modal__body">
+      <p class="admin-question">{{ actionQuestion }}</p>
+      @if (actionHelp) {
+        <p class="admin-help">{{ actionHelp }}</p>
+      }
+
+      @if (actionError) {
+        <p class="admin-modal__error" role="alert">{{ actionError }}</p>
+      }
+
+      <footer class="admin-modal__footer">
+        <button class="admin-secondary-button" type="button" [disabled]="isUpdatingAction" (click)="closeActionModal()">Cancelar</button>
+        <button
+          [class]="actionType === 'status' && actionUser?.activo === 1 ? 'admin-danger-button' : 'admin-primary-button'"
+          type="button"
+          [disabled]="isUpdatingAction"
+          (click)="confirmAction()"
+        >
+          {{ actionSubmitLabel }}
+        </button>
+      </footer>
+    </div>
+  </section>
+}

@@ -1,0 +1,43 @@
+<section class="admin-dashboard">
+  <div class="admin-dashboard__header">
+    <h2>Panel de Administración</h2>
+    <p>Gestioná el contenido y los miembros de Entre Créditos.</p>
+  </div>
+
+  <h3 class="admin-dashboard__section-title">Resumen del sistema</h3>
+
+  <section class="admin-metrics" aria-label="Métricas administrativas">
+    @for (metric of metricLabels; track metric.key) {
+      <article class="admin-metric-card">
+        <span class="admin-metric-card__label">{{ metric.label }}</span>
+        <strong class="admin-metric-card__value">
+          @if (isLoadingSummary) {
+            —
+          } @else {
+            {{ summary?.[metric.key] ?? '—' }}
+          }
+        </strong>
+      </article>
+    }
+  </section>
+
+  @if (summaryError) {
+    <div class="admin-dashboard__error" role="alert">
+      <span>{{ summaryError }}</span>
+      <button type="button" (click)="loadSummary()">Reintentar</button>
+    </div>
+  }
+
+  <h3 class="admin-dashboard__section-title admin-dashboard__section-title--access">
+    Accesos rápidos
+  </h3>
+
+  <div class="admin-dashboard__grid">
+    @for (section of sections; track section.path) {
+      <a class="admin-dashboard-card" [routerLink]="section.path">
+        <span class="admin-dashboard-card__title">{{ section.title }}</span>
+        <span class="admin-dashboard-card__description">{{ section.description }}</span>
+      </a>
+    }
+  </div>
+</section>

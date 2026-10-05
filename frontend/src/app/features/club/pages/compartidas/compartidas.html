@@ -1,0 +1,55 @@
+<section class="shared-page">
+  <header class="shared-page__header">
+    <p class="section-eyebrow">Recomendaciones directas</p>
+    <h1 class="section-title">Compartidas conmigo</h1>
+    <p>Reseñas que otros miembros eligieron especialmente para vos.</p>
+  </header>
+
+  @if (isLoading) {
+    <p class="shared-page__state">Cargando reseñas compartidas...</p>
+  } @else if (loadError) {
+    <div class="shared-page__state" role="alert">
+      <p>{{ loadError }}</p>
+      <button type="button" (click)="loadSharedReviews()">Reintentar</button>
+    </div>
+  } @else if (sharedReviews.length === 0) {
+    <div class="shared-page__empty">
+      <h2>Todavía no compartieron reseñas con vos</h2>
+      <p>Cuando otro miembro quiera recomendarte una reseña, va a aparecer acá.</p>
+      <a routerLink="/club/home">Explorar reseñas</a>
+    </div>
+  } @else {
+    <div class="shared-reviews" aria-label="Reseñas compartidas conmigo">
+      @for (sharedReview of sharedReviews; track sharedReview.shareId) {
+        <article class="shared-review">
+          <header class="shared-review__context">
+            <span class="shared-review__avatar" aria-hidden="true">
+              <img
+                [src]="sharedReview.sender.avatarUrl"
+                [alt]="''"
+                (error)="onSenderAvatarError($event, sharedReview)"
+              >
+            </span>
+            <div>
+              <p>
+                <strong>{{ sharedReview.sender.name }}</strong>
+                compartió esta reseña con vos
+              </p>
+              <time [attr.datetime]="sharedReview.sharedAt">
+                Compartida el {{ formatSharedDate(sharedReview.sharedAt) }}
+              </time>
+            </div>
+          </header>
+
+          <app-review-card
+            class="shared-review-card"
+            [review]="sharedReview.review"
+            variant="general"
+            [allowGeneralExpansion]="true"
+            (movieSelected)="onMovieSelected($event)"
+          ></app-review-card>
+        </article>
+      }
+    </div>
+  }
+</section>

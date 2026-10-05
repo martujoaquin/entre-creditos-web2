@@ -1,0 +1,59 @@
+<section class="club-page">
+  <header class="club-page__header">
+    <p class="section-eyebrow">Cartelera del club</p>
+    <h1 class="section-title">Películas</h1>
+    <p class="club-page__text">Explorá las películas que inspiran las conversaciones del club.</p>
+  </header>
+
+  @if (isLoading) {
+    <p class="club-page__state">Cargando películas...</p>
+  } @else if (errorMessage) {
+    <div class="club-page__state" role="alert">
+      <p>{{ errorMessage }}</p>
+      <button class="club-page__retry" type="button" (click)="loadMovies()">Reintentar</button>
+    </div>
+  } @else if (movies.length === 0) {
+    <p class="club-page__state">No hay películas disponibles por el momento.</p>
+  } @else {
+    <div class="genre-filter" aria-label="Filtrar películas por género">
+      <button
+        class="genre-filter__chip"
+        type="button"
+        [class.genre-filter__chip--active]="selectedGenreId === null"
+        [attr.aria-pressed]="selectedGenreId === null"
+        (click)="selectGenre(null)"
+      >
+        Todos
+      </button>
+
+      @for (genre of genres; track genre.id_genero) {
+        <button
+          class="genre-filter__chip"
+          type="button"
+          [class.genre-filter__chip--active]="selectedGenreId === genre.id_genero"
+          [attr.aria-pressed]="selectedGenreId === genre.id_genero"
+          (click)="selectGenre(genre.id_genero)"
+        >
+          {{ genre.nombre }}
+        </button>
+      }
+    </div>
+
+    @if (genresError) {
+      <p class="genre-filter__notice">{{ genresError }}</p>
+    }
+
+    @if (filteredMovies.length === 0) {
+      <div class="club-page__state">
+        <p>No hay películas disponibles en este género.</p>
+        <button class="club-page__retry" type="button" (click)="selectGenre(null)">Ver todas</button>
+      </div>
+    } @else {
+    <div class="movies-grid" aria-label="Películas del club">
+      @for (movie of filteredMovies; track movie.id_pelicula) {
+        <app-movie-card [movie]="movie"></app-movie-card>
+      }
+    </div>
+    }
+  }
+</section>

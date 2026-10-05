@@ -1,0 +1,135 @@
+<section class="admin-genres">
+  <header class="admin-genres__header">
+    <div>
+      <h2>Géneros</h2>
+      <p>Administrá los géneros disponibles para las películas.</p>
+    </div>
+
+    <button class="admin-primary-button" type="button" (click)="openCreateModal()">
+      + Nuevo género
+    </button>
+  </header>
+
+  @if (feedbackMessage) {
+    <p class="admin-genres__state admin-genres__state--success" role="status">{{ feedbackMessage }}</p>
+  }
+
+  @if (isLoading) {
+    <div class="admin-genres__state">
+      <span class="admin-spinner" aria-hidden="true"></span>
+      <span>Cargando géneros...</span>
+    </div>
+  } @else if (loadError) {
+    <div class="admin-genres__state admin-genres__state--error" role="alert">
+      <span>{{ loadError }}</span>
+      <button type="button" (click)="loadGenres()">Reintentar</button>
+    </div>
+  } @else if (genres.length === 0) {
+    <div class="admin-genres__empty">
+      <p>No hay géneros registrados.</p>
+      <button class="admin-primary-button" type="button" (click)="openCreateModal()">
+        Crear el primero
+      </button>
+    </div>
+  } @else {
+    <div class="admin-genres__table-wrap">
+      <table class="admin-genres__table">
+        <thead>
+          <tr>
+            <th scope="col">Nombre</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (genre of genres; track genre.id_genero) {
+            <tr>
+              <td>{{ genre.nombre }}</td>
+              <td>
+                <div class="admin-genres__actions">
+                  <button class="admin-secondary-button" type="button" (click)="openEditModal(genre)">
+                    Editar
+                  </button>
+                  <button class="admin-danger-button" type="button" (click)="openDeleteModal(genre)">
+                    Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
+
+@if (isFormModalOpen) {
+  <div class="admin-modal-backdrop" role="presentation" (click)="closeFormModal()"></div>
+  <section
+    class="admin-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="genre-form-title"
+  >
+    <header class="admin-modal__header">
+      <h3 id="genre-form-title">{{ formTitle }}</h3>
+      <button type="button" aria-label="Cerrar modal" (click)="closeFormModal()">×</button>
+    </header>
+
+    <form class="admin-modal__body" (ngSubmit)="saveGenre()">
+      <label for="genre-name">Nombre</label>
+      <input
+        id="genre-name"
+        name="genreName"
+        type="text"
+        autocomplete="off"
+        [(ngModel)]="genreName"
+        [disabled]="isSaving"
+      >
+
+      @if (formError) {
+        <p class="admin-modal__error" role="alert">{{ formError }}</p>
+      }
+
+      <footer class="admin-modal__footer">
+        <button class="admin-secondary-button" type="button" [disabled]="isSaving" (click)="closeFormModal()">
+          Cancelar
+        </button>
+        <button class="admin-primary-button" type="submit" [disabled]="isSaving">
+          {{ formSubmitLabel }}
+        </button>
+      </footer>
+    </form>
+  </section>
+}
+
+@if (isDeleteModalOpen) {
+  <div class="admin-modal-backdrop" role="presentation" (click)="closeDeleteModal()"></div>
+  <section
+    class="admin-modal admin-modal--confirm"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="genre-delete-title"
+  >
+    <header class="admin-modal__header">
+      <h3 id="genre-delete-title">Eliminar género</h3>
+      <button type="button" aria-label="Cerrar modal" (click)="closeDeleteModal()">×</button>
+    </header>
+
+    <div class="admin-modal__body">
+      <p class="admin-modal__question">¿Deseás eliminar este género?</p>
+
+      @if (deleteError) {
+        <p class="admin-modal__error" role="alert">{{ deleteError }}</p>
+      }
+
+      <footer class="admin-modal__footer">
+        <button class="admin-secondary-button" type="button" [disabled]="isDeleting" (click)="closeDeleteModal()">
+          Cancelar
+        </button>
+        <button class="admin-danger-button" type="button" [disabled]="isDeleting" (click)="deleteGenre()">
+          {{ isDeleting ? 'Eliminando...' : 'Eliminar' }}
+        </button>
+      </footer>
+    </div>
+  </section>
+}

@@ -1,0 +1,183 @@
+<section class="admin-reviews">
+  <header class="admin-reviews__header">
+    <div>
+      <h2>Reseñas</h2>
+      <p>Supervisá las reseñas publicadas por los miembros del Club.</p>
+    </div>
+  </header>
+
+  @if (feedbackMessage) {
+    <p class="admin-state admin-state--success" role="status">{{ feedbackMessage }}</p>
+  }
+
+  @if (isLoading) {
+    <div class="admin-state">
+      <span class="admin-spinner" aria-hidden="true"></span>
+      <span>Cargando reseñas...</span>
+    </div>
+  } @else if (loadError) {
+    <div class="admin-state admin-state--error" role="alert">
+      <span>{{ loadError }}</span>
+      <button type="button" (click)="loadReviews()">Reintentar</button>
+    </div>
+  } @else if (reviews.length === 0) {
+    <p class="admin-state">No hay reseñas publicadas.</p>
+  } @else {
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th scope="col">Película</th>
+            <th scope="col">Autor</th>
+            <th scope="col">Valoración</th>
+            <th scope="col">Reseña</th>
+            <th scope="col">Fecha</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (review of reviews; track review.id_resena) {
+            <tr>
+              <td>
+                <div class="admin-media">
+                  <img
+                    class="admin-poster"
+                    [src]="getPosterUrl(review)"
+                    [alt]="'Póster de ' + review.pelicula.titulo"
+                    (error)="onPosterError(review)"
+                  >
+                  <div>
+                    <strong>{{ review.pelicula.titulo }}</strong>
+                    @if (review.pelicula.activo === 0) {
+                      <span class="admin-badge admin-badge--inactive">Inactiva</span>
+                    }
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="admin-media admin-media--author">
+                  <img
+                    class="admin-avatar"
+                    [src]="getAvatarUrl(review)"
+                    [alt]="'Avatar de ' + review.autor.nombre_completo"
+                    (error)="onAvatarError(review)"
+                  >
+                  <span>{{ review.autor.nombre_completo }}</span>
+                </div>
+              </td>
+              <td>{{ review.puntuacion }}/5</td>
+              <td class="admin-review-cell">
+                <div class="admin-review-text">
+                  @if (review.frase_destacada) {
+                    <strong class="admin-review-highlight">
+                      {{ truncateText(review.frase_destacada, 40) }}
+                    </strong>
+                  }
+                  <p class="admin-review-excerpt">{{ truncateText(review.contenido, 120) }}</p>
+                  <button class="admin-link-button" type="button" (click)="openDetailModal(review)">
+                    Ver completa
+                  </button>
+                </div>
+              </td>
+              <td>{{ formatDate(review.fecha_creacion) }}</td>
+              <td>
+                <div class="admin-actions">
+                  <button class="admin-danger-button" type="button" (click)="openDeleteModal(review)">Eliminar</button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
+
+@if (isDetailModalOpen && selectedReview) {
+  <div class="admin-modal-backdrop" role="presentation" (click)="closeDetailModal()"></div>
+  <section class="admin-modal admin-modal--wide" role="dialog" aria-modal="true" aria-labelledby="review-detail-title">
+    <header class="admin-modal__header">
+      <h3 id="review-detail-title">Reseña completa</h3>
+      <button type="button" aria-label="Cerrar modal" (click)="closeDetailModal()">×</button>
+    </header>
+
+    <div class="admin-modal__body">
+      <div class="admin-detail-grid">
+        <div class="admin-media">
+          <img
+            class="admin-poster"
+            [src]="getPosterUrl(selectedReview)"
+            [alt]="'Póster de ' + selectedReview.pelicula.titulo"
+            (error)="onPosterError(selectedReview)"
+          >
+          <div>
+            <strong>{{ selectedReview.pelicula.titulo }}</strong>
+            @if (selectedReview.pelicula.activo === 0) {
+              <span class="admin-badge admin-badge--inactive">Inactiva</span>
+            }
+          </div>
+        </div>
+
+        <div class="admin-media admin-media--author">
+          <img
+            class="admin-avatar"
+            [src]="getAvatarUrl(selectedReview)"
+            [alt]="'Avatar de ' + selectedReview.autor.nombre_completo"
+            (error)="onAvatarError(selectedReview)"
+          >
+          <span>{{ selectedReview.autor.nombre_completo }}</span>
+        </div>
+
+        <p><span>Valoración</span><strong>{{ selectedReview.puntuacion }}/5</strong></p>
+        <p><span>Fecha</span><strong>{{ formatDate(selectedReview.fecha_creacion) }}</strong></p>
+      </div>
+
+      @if (selectedReview.frase_destacada) {
+        <div class="admin-detail-block">
+          <span>Frase destacada</span>
+          <p>{{ selectedReview.frase_destacada }}</p>
+        </div>
+      }
+
+      <div class="admin-detail-block">
+        <span>Contenido</span>
+        <p>{{ selectedReview.contenido }}</p>
+      </div>
+
+      <footer class="admin-modal__footer">
+        <button class="admin-secondary-button" type="button" (click)="closeDetailModal()">Cerrar</button>
+      </footer>
+    </div>
+  </section>
+}
+
+@if (isDeleteModalOpen && reviewToDelete) {
+  <div class="admin-modal-backdrop" role="presentation" (click)="closeDeleteModal()"></div>
+  <section class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="review-delete-title">
+    <header class="admin-modal__header">
+      <h3 id="review-delete-title">Eliminar reseña</h3>
+      <button type="button" aria-label="Cerrar modal" (click)="closeDeleteModal()">×</button>
+    </header>
+
+    <div class="admin-modal__body">
+      <p class="admin-question">¿Deseás eliminar esta reseña?</p>
+      <p class="admin-help">Esta acción es permanente y la reseña dejará de estar disponible en el Club.</p>
+
+      <div class="admin-delete-context">
+        <p><span>Película:</span> {{ reviewToDelete.pelicula.titulo }}</p>
+        <p><span>Autor:</span> {{ reviewToDelete.autor.nombre_completo }}</p>
+      </div>
+
+      @if (deleteError) {
+        <p class="admin-modal__error" role="alert">{{ deleteError }}</p>
+      }
+
+      <footer class="admin-modal__footer">
+        <button class="admin-secondary-button" type="button" [disabled]="isDeleting" (click)="closeDeleteModal()">Cancelar</button>
+        <button class="admin-danger-button" type="button" [disabled]="isDeleting" (click)="confirmDelete()">
+          {{ isDeleting ? 'Eliminando...' : 'Eliminar' }}
+        </button>
+      </footer>
+    </div>
+  </section>
+}

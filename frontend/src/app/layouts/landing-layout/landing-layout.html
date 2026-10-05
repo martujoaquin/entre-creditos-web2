@@ -1,0 +1,52 @@
+<div class="landing-layout">
+  <nav class="landing-navbar" aria-label="Navegación principal">
+    <a class="brand" routerLink="/">
+      <img class="brand-logo" src="/images/LogoCompletoPNG.png" alt="" aria-hidden="true">
+    </a>
+
+    <button
+      class="landing-menu-button"
+      type="button"
+      aria-controls="landing-mobile-menu"
+      [attr.aria-expanded]="isMobileMenuOpen"
+      [attr.aria-label]="isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'"
+      (click)="toggleMobileMenu()"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <div class="nav-menu" aria-label="Secciones de la landing">
+      <a class="nav-menu-link" href="#como-funciona">Cómo funciona</a>
+      <a class="nav-menu-link" href="#ultimas-resenas">Últimas reseñas</a>
+    </div>
+
+    <div class="nav-actions">
+      <a class="btn-secondary" routerLink="/login">Iniciar sesión</a>
+      <a class="btn-primary" routerLink="/register">Registrarse</a>
+    </div>
+
+    @if (isMobileMenuOpen) {
+      <div class="landing-drawer-backdrop" role="presentation" (click)="closeMobileMenu()"></div>
+      <aside id="landing-mobile-menu" class="landing-drawer" aria-label="Menú principal">
+        <header class="landing-drawer__header">
+          <img src="/images/LogoCompletoPNG.png" alt="Entre Créditos">
+          <button type="button" aria-label="Cerrar menú" (click)="closeMobileMenu()">×</button>
+        </header>
+
+        <nav class="landing-drawer__nav" aria-label="Secciones de la landing">
+          <a href="#como-funciona" (click)="closeMobileMenu()">Cómo funciona</a>
+          <a href="#ultimas-resenas" (click)="closeMobileMenu()">Últimas reseñas</a>
+        </nav>
+
+        <div class="landing-drawer__actions">
+          <a class="btn-secondary" routerLink="/login" (click)="closeMobileMenu()">Iniciar sesión</a>
+          <a class="btn-primary" routerLink="/register" (click)="closeMobileMenu()">Registrarse</a>
+        </div>
+      </aside>
+    }
+  </nav>
+
+  <router-outlet></router-outlet>
+</div>

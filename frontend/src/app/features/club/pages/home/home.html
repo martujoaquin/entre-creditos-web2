@@ -1,0 +1,67 @@
+<section class="club-home">
+  <header class="club-home__welcome">
+    <p class="section-eyebrow">El club</p>
+    <h1 class="section-title">Entre películas y conversaciones</h1>
+    <p class="club-home__intro">La historia continúa después de la película.</p>
+    <a class="btn-primary" routerLink="/club/peliculas">Explorar películas</a>
+  </header>
+
+  <div class="content-divider"></div>
+
+  <section class="home-section" aria-labelledby="latest-reviews-title">
+    <header class="home-section__header">
+      <h2 id="latest-reviews-title">Últimas reseñas</h2>
+      <p>Lo que se anda diciendo en el Club.</p>
+    </header>
+
+    @if (isReviewsLoading) {
+      <p class="home-section__state">Cargando últimas reseñas...</p>
+    } @else if (reviewsError) {
+      <p class="home-section__state" role="alert">{{ reviewsError }}</p>
+    } @else if (latestReviews.length === 0) {
+      <div class="home-empty">
+        <h3>Todavía no hay reseñas en el Club</h3>
+        <p>Explorá una película y empezá la primera conversación.</p>
+        <a class="btn-primary" routerLink="/club/peliculas">Explorar películas</a>
+      </div>
+    } @else {
+      <div class="reviews-grid" aria-label="Últimas reseñas del Club">
+        @for (review of latestReviews; track review.id) {
+          <app-review-card
+            [review]="review"
+            variant="home"
+            [allowGeneralExpansion]="true"
+            (movieSelected)="onMovieSelected($event)"
+          ></app-review-card>
+        }
+      </div>
+
+      <a class="home-section__link" routerLink="/club/peliculas">Explorar todas las películas →</a>
+    }
+  </section>
+
+  <div class="content-divider"></div>
+
+  <section class="home-section home-section--movies" aria-labelledby="conversation-movies-title">
+    <header class="home-section__header">
+      <h2 id="conversation-movies-title">Películas para seguir conversando</h2>
+      <p>Historias que todavía tienen mucho para decir.</p>
+    </header>
+
+    @if (isMoviesLoading) {
+      <p class="home-section__state">Cargando películas...</p>
+    } @else if (moviesError) {
+      <p class="home-section__state" role="alert">{{ moviesError }}</p>
+    } @else if (featuredMovies.length === 0) {
+      <p class="home-section__state">No hay películas disponibles por el momento.</p>
+    } @else {
+      <div class="movies-grid" aria-label="Películas para seguir conversando">
+        @for (movie of featuredMovies; track movie.id_pelicula) {
+          <app-movie-card [movie]="movie"></app-movie-card>
+        }
+      </div>
+
+      <a class="home-section__link" routerLink="/club/peliculas">Explorar películas →</a>
+    }
+  </section>
+</section>

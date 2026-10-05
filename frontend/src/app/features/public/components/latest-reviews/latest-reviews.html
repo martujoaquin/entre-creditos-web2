@@ -1,0 +1,27 @@
+<section class="section">
+  <div class="section-inner">
+    <header class="section-header section-header--center">
+      <p class="section-eyebrow">ÚLTIMAS RESEÑAS</p>
+      <h2 class="section-title">Lo que está diciendo tu círculo</h2>
+    </header>
+
+    @if (isLoading) {
+      <p class="reviews-state">Cargando reseñas...</p>
+    } @else if (hasError) {
+      <p class="reviews-state">No pudimos cargar las últimas reseñas en este momento.</p>
+    } @else if (reviews.length === 0) {
+      <p class="reviews-state">Aún no hay reseñas para mostrar.</p>
+    } @else {
+      <div class="reviews">
+        @for (review of reviews; track review.id) {
+          <app-review-card [review]="review"></app-review-card>
+        }
+      </div>
+    }
+
+    <a class="reviews-cta-link" routerLink="/register">
+      Sumate para ver todas las reseñas
+      <span aria-hidden="true">→</span>
+    </a>
+  </div>
+</section>

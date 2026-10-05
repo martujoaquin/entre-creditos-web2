@@ -1,0 +1,83 @@
+<section class="login-page">
+  <p class="login-subtitle">Bienvenido nuevamente al club.</p>
+
+  <article class="login-card">
+    <h1>Iniciar sesión</h1>
+
+    <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+      <label class="login-field">
+        <span>Correo electrónico</span>
+        <input
+          type="email"
+          name="email"
+          formControlName="email"
+          placeholder="tunombre@email.com"
+          autocomplete="email"
+          [class.is-invalid]="loginForm.controls.email.invalid && loginForm.controls.email.touched"
+        >
+        @if (loginForm.controls.email.invalid && loginForm.controls.email.touched) {
+          <small class="login-field-error">Ingresá un correo electrónico válido.</small>
+        }
+      </label>
+
+      <label class="login-field">
+        <span>Contraseña</span>
+        <div class="password-input-wrapper">
+          <input
+            #passwordInput
+            [type]="showPassword ? 'text' : 'password'"
+            name="password"
+            formControlName="password"
+            placeholder="Ingresá tu contraseña"
+            autocomplete="current-password"
+            [class.is-invalid]="
+              loginForm.controls.password.invalid && loginForm.controls.password.touched
+            "
+          >
+          <button
+            class="password-toggle"
+            type="button"
+            [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+            (click)="togglePasswordVisibility(passwordInput)"
+          >
+            @if (showPassword) {
+              <svg class="password-toggle-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M3 3l18 18"></path>
+                <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"></path>
+                <path d="M9.9 4.2A10.9 10.9 0 0 1 12 4c5 0 8.8 4.2 10 8a12.6 12.6 0 0 1-3 4.7"></path>
+                <path d="M6.6 6.6A12.4 12.4 0 0 0 2 12c1.2 3.8 5 8 10 8 1.5 0 2.9-.4 4.1-1"></path>
+              </svg>
+            } @else {
+              <svg class="password-toggle-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M2 12c1.2-3.8 5-8 10-8s8.8 4.2 10 8c-1.2 3.8-5 8-10 8s-8.8-4.2-10-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            }
+          </button>
+        </div>
+        @if (loginForm.controls.password.invalid && loginForm.controls.password.touched) {
+          <small class="login-field-error">Ingresá tu contraseña.</small>
+        }
+      </label>
+
+      @if (errorMessage) {
+        <p class="login-error" role="alert">{{ errorMessage }}</p>
+      }
+
+      @if (successMessage) {
+        <p class="login-success" role="status">{{ successMessage }}</p>
+      }
+
+      <button class="btn-primary" type="submit" [disabled]="isLoading">
+        {{ isLoading ? 'Ingresando...' : 'Ingresar' }}
+      </button>
+    </form>
+
+    <p class="login-register">
+      ¿No tenés cuenta?
+      <a routerLink="/register">Registrarse</a>
+    </p>
+  </article>
+
+  <a class="login-home-link" routerLink="/">← Volver al inicio</a>
+</section>

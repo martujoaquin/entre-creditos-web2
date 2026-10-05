@@ -1,0 +1,194 @@
+<section class="admin-movies">
+  <header class="admin-movies__header">
+    <div>
+      <h2>Películas</h2>
+      <p>Administrá el catálogo de películas del Club.</p>
+    </div>
+    <button class="admin-primary-button" type="button" (click)="openCreateModal()">+ Nueva película</button>
+  </header>
+
+  @if (feedbackMessage) {
+    <p class="admin-state admin-state--success" role="status">{{ feedbackMessage }}</p>
+  }
+
+  @if (genresError) {
+    <p class="admin-state admin-state--error" role="alert">{{ genresError }}</p>
+  }
+
+  @if (isLoading) {
+    <div class="admin-state">
+      <span class="admin-spinner" aria-hidden="true"></span>
+      <span>Cargando películas...</span>
+    </div>
+  } @else if (loadError) {
+    <div class="admin-state admin-state--error" role="alert">
+      <span>{{ loadError }}</span>
+      <button type="button" (click)="loadMovies()">Reintentar</button>
+    </div>
+  } @else if (movies.length === 0) {
+    <div class="admin-empty">
+      <p>No hay películas registradas.</p>
+      <button class="admin-primary-button" type="button" (click)="openCreateModal()">Crear la primera</button>
+    </div>
+  } @else {
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th scope="col">Poster</th>
+            <th scope="col">Título</th>
+            <th scope="col">Director</th>
+            <th scope="col">Año</th>
+            <th scope="col">Género</th>
+            <th scope="col">Estado</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (movie of movies; track movie.id_pelicula) {
+            <tr>
+              <td>
+                <img
+                  class="admin-poster"
+                  [src]="getPosterUrl(movie)"
+                  [alt]="'Póster de ' + movie.titulo"
+                  (error)="onPosterError(movie)"
+                >
+              </td>
+              <td>{{ movie.titulo }}</td>
+              <td>{{ movie.director }}</td>
+              <td>{{ movie.anio }}</td>
+              <td>{{ getGenreName(movie.id_genero) }}</td>
+              <td>
+                <span class="admin-badge" [class.admin-badge--inactive]="movie.activo !== 1">
+                  {{ movie.activo === 1 ? 'Activa' : 'Inactiva' }}
+                </span>
+              </td>
+              <td>
+                <div class="admin-actions">
+                  <button class="admin-secondary-button" type="button" (click)="openEditModal(movie)">Editar</button>
+                  <button
+                    [class]="movie.activo === 1 ? 'admin-danger-button' : 'admin-success-button'"
+                    type="button"
+                    (click)="openToggleModal(movie)"
+                  >
+                    {{ movie.activo === 1 ? 'Inactivar' : 'Reactivar' }}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
+
+@if (isFormModalOpen) {
+  <div class="admin-modal-backdrop" role="presentation" (click)="closeFormModal()"></div>
+  <section class="admin-modal admin-modal--wide" role="dialog" aria-modal="true" aria-labelledby="movie-form-title">
+    <header class="admin-modal__header">
+      <h3 id="movie-form-title">{{ formTitle }}</h3>
+      <button type="button" aria-label="Cerrar modal" (click)="closeFormModal()">×</button>
+    </header>
+
+    <form class="admin-modal__body">
+      <div class="admin-form-grid">
+        <label>
+          <span>Título</span>
+          <input name="titulo" type="text" [(ngModel)]="form.titulo" [disabled]="isSaving">
+        </label>
+        <label>
+          <span>Director</span>
+          <input name="director" type="text" [(ngModel)]="form.director" [disabled]="isSaving">
+        </label>
+        <label>
+          <span>Año</span>
+          <input name="anio" type="number" min="1888" [(ngModel)]="form.anio" [disabled]="isSaving">
+        </label>
+        <label>
+          <span>Género</span>
+          <select name="id_genero" [(ngModel)]="form.id_genero" [disabled]="isSaving || genres.length === 0">
+            <option value="">Seleccionar género</option>
+            @for (genre of genres; track genre.id_genero) {
+              <option [value]="genre.id_genero">{{ genre.nombre }}</option>
+            }
+          </select>
+        </label>
+      </div>
+
+      <label>
+        <span>Sinopsis</span>
+        <textarea name="sinopsis" rows="5" [(ngModel)]="form.sinopsis" [disabled]="isSaving"></textarea>
+      </label>
+
+      <label>
+        <span>Imagen</span>
+        <input
+          name="imagen"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          [disabled]="isSaving"
+          (change)="onImageSelected($event)"
+        >
+      </label>
+
+      @if (imagePreviewUrl) {
+        <div class="admin-preview">
+          <img class="admin-poster" [src]="imagePreviewUrl" alt="Vista previa del póster">
+          @if (selectedImage) {
+            <span>{{ selectedImage.name }}</span>
+          } @else if (isEditing) {
+            <span>Imagen actual</span>
+          }
+        </div>
+      }
+
+      @if (formError) {
+        <p class="admin-modal__error" role="alert">{{ formError }}</p>
+      }
+
+      <footer class="admin-modal__footer">
+        <button class="admin-secondary-button" type="button" [disabled]="isSaving" (click)="closeFormModal()">Cancelar</button>
+        <button
+          class="admin-primary-button"
+          type="button"
+          [disabled]="isSaving"
+          (click)="saveMovie()"
+        >
+          {{ formSubmitLabel }}
+        </button>
+      </footer>
+    </form>
+  </section>
+}
+
+@if (isToggleModalOpen) {
+  <div class="admin-modal-backdrop" role="presentation" (click)="closeToggleModal()"></div>
+  <section class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="movie-toggle-title">
+    <header class="admin-modal__header">
+      <h3 id="movie-toggle-title">{{ toggleTitle }}</h3>
+      <button type="button" aria-label="Cerrar modal" (click)="closeToggleModal()">×</button>
+    </header>
+    <div class="admin-modal__body">
+      <p class="admin-question">{{ toggleQuestion }}</p>
+      @if (movieToToggle?.activo === 1) {
+        <p class="admin-help">Dejará de mostrarse en el Club y sus reseñas dejarán de ser visibles.</p>
+      }
+      @if (toggleError) {
+        <p class="admin-modal__error" role="alert">{{ toggleError }}</p>
+      }
+      <footer class="admin-modal__footer">
+        <button class="admin-secondary-button" type="button" [disabled]="isToggling" (click)="closeToggleModal()">Cancelar</button>
+        <button
+          [class]="movieToToggle?.activo === 1 ? 'admin-danger-button' : 'admin-success-button'"
+          type="button"
+          [disabled]="isToggling"
+          (click)="toggleMovieStatus()"
+        >
+          {{ toggleSubmitLabel }}
+        </button>
+      </footer>
+    </div>
+  </section>
+}

@@ -1,0 +1,69 @@
+<div class="admin-shell">
+  @if (isSidebarOpen) {
+    <button
+      class="admin-backdrop"
+      type="button"
+      aria-label="Cerrar navegación administrativa"
+      (click)="closeSidebar()"
+    ></button>
+  }
+
+  <aside
+    id="admin-sidebar"
+    class="admin-sidebar"
+    [class.admin-sidebar--open]="isSidebarOpen"
+    aria-label="Panel de administración"
+  >
+    <a class="admin-brand" routerLink="/admin/dashboard" (click)="closeSidebar()" aria-label="Entre Créditos Administración">
+      <img src="/images/LogoCompletoPNG.png" alt="Entre Créditos">
+    </a>
+
+    <nav class="admin-nav" aria-label="Secciones administrativas">
+      <a routerLink="/admin/dashboard" routerLinkActive="admin-nav__link--active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeSidebar()">Dashboard</a>
+      <a routerLink="/admin/peliculas" routerLinkActive="admin-nav__link--active" (click)="closeSidebar()">Películas</a>
+      <a routerLink="/admin/generos" routerLinkActive="admin-nav__link--active" (click)="closeSidebar()">Géneros</a>
+      <a routerLink="/admin/usuarios" routerLinkActive="admin-nav__link--active" (click)="closeSidebar()">Usuarios</a>
+      <a routerLink="/admin/resenas" routerLinkActive="admin-nav__link--active" (click)="closeSidebar()">Reseñas</a>
+    </nav>
+
+    <div class="admin-sidebar__actions">
+      <a class="admin-action-link" routerLink="/club/home" (click)="closeSidebar()">Volver al Club</a>
+      <button class="admin-action-link admin-action-link--button" type="button" [disabled]="isLoggingOut" (click)="logout()">
+        {{ isLoggingOut ? 'Cerrando...' : 'Cerrar sesión' }}
+      </button>
+      @if (logoutError) {
+        <p class="admin-logout-error" role="alert">{{ logoutError }}</p>
+      }
+    </div>
+  </aside>
+
+  <div class="admin-main">
+    <header class="admin-header">
+      <button
+        class="admin-menu-button"
+        type="button"
+        aria-controls="admin-sidebar"
+        [attr.aria-expanded]="isSidebarOpen"
+        [attr.aria-label]="isSidebarOpen ? 'Cerrar menú administrativo' : 'Abrir menú administrativo'"
+        (click)="toggleSidebar()"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <h1>Administración</h1>
+
+      @if (currentUser) {
+        <div class="admin-user">
+          <span class="admin-user__name">{{ currentUser.nombre_completo }}</span>
+          <span class="admin-user__avatar" aria-hidden="true">{{ userInitial }}</span>
+        </div>
+      }
+    </header>
+
+    <main class="admin-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

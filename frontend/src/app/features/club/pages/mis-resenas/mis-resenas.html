@@ -1,0 +1,162 @@
+<section class="my-reviews-page">
+  <header class="my-reviews-page__header">
+    <p class="section-eyebrow">Tu archivo personal</p>
+    <h1 class="section-title">Mis reseñas</h1>
+  </header>
+
+  @if (shareNotification) {
+    <p class="my-reviews-page__notification" role="status">{{ shareNotification }}</p>
+  }
+
+  @if (isLoading) {
+    <p class="my-reviews-page__state">Cargando tus reseñas...</p>
+  } @else if (loadError) {
+    <div class="my-reviews-page__state" role="alert">
+      <p>{{ loadError }}</p>
+      <button type="button" (click)="loadReviews()">Reintentar</button>
+    </div>
+  } @else if (reviews.length === 0) {
+    <div class="my-reviews-page__empty">
+      <h2>Todavía no escribiste ninguna reseña</h2>
+      <p>Cuando publiques tu primera reseña aparecerá acá.</p>
+      <a class="btn-primary" routerLink="/club/peliculas">Explorar películas</a>
+    </div>
+  } @else {
+    <div class="my-reviews-list" aria-label="Mis reseñas">
+      @for (review of reviews; track review.id) {
+        <article class="my-review">
+          <app-review-card
+            [review]="review"
+            variant="my-reviews"
+            [isOwnReview]="true"
+            (edit)="onEditReview($event)"
+            (delete)="onDeleteReview($event)"
+            (share)="onShareReview($event)"
+            (movieSelected)="onMovieSelected($event)"
+          ></app-review-card>
+        </article>
+      }
+    </div>
+  }
+
+  @if (isDeleteModalOpen) {
+    <div class="modal-backdrop" role="presentation" (click)="closeDeleteModal()">
+      <section
+        class="review-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="delete-review-title"
+        (click)="$event.stopPropagation()"
+      >
+        <button
+          class="review-modal__close"
+          type="button"
+          aria-label="Cerrar"
+          [disabled]="isDeletingReview"
+          (click)="closeDeleteModal()"
+        >
+          ×
+        </button>
+
+        <h2 id="delete-review-title">Eliminar reseña</h2>
+        <p>¿Seguro que querés eliminar tu reseña?</p>
+        <span>Esta acción no se puede deshacer.</span>
+
+        @if (deleteReviewError) {
+          <p class="review-modal__error" role="alert">{{ deleteReviewError }}</p>
+        }
+
+        <div class="review-modal__actions">
+          <button type="button" [disabled]="isDeletingReview" (click)="closeDeleteModal()">Cancelar</button>
+          <button
+            class="review-modal__danger"
+            type="button"
+            [disabled]="isDeletingReview"
+            (click)="confirmDeleteReview()"
+          >
+            {{ isDeletingReview ? 'Eliminando...' : 'Eliminar reseña' }}
+          </button>
+        </div>
+      </section>
+    </div>
+  }
+
+  @if (isShareModalOpen) {
+    <div class="modal-backdrop" role="presentation" (click)="closeShareModal()">
+      <section
+        class="review-modal review-modal--share"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="share-review-title"
+        (click)="$event.stopPropagation()"
+      >
+        <button
+          class="review-modal__close"
+          type="button"
+          aria-label="Cerrar"
+          [disabled]="isSharingReview"
+          (click)="closeShareModal()"
+        >
+          ×
+        </button>
+
+        <h2 id="share-review-title">Compartir reseña</h2>
+        <p>Elegí con quién querés compartir esta reseña.</p>
+
+        <label class="share-modal__search">
+          <span>Buscar miembro</span>
+          <input
+            type="search"
+            aria-label="Buscar miembro"
+            placeholder="Buscar miembro..."
+            [value]="shareSearchTerm"
+            [disabled]="isLoadingShareUsers || isSharingReview"
+            (input)="onShareSearchInput($event)"
+          >
+        </label>
+
+        @if (shareError) {
+          <p class="review-modal__error" role="alert">{{ shareError }}</p>
+        }
+
+        <div class="share-modal__users">
+          @if (isLoadingShareUsers) {
+            <p class="share-modal__state">Cargando miembros...</p>
+          } @else if (shareUsers.length === 0) {
+            <p class="share-modal__state">No hay otros miembros disponibles para compartir.</p>
+          } @else if (filteredShareUsers.length === 0) {
+            <p class="share-modal__state">No encontramos miembros con ese nombre.</p>
+          } @else {
+            @for (user of filteredShareUsers; track user.id) {
+              <label class="share-modal__user" [for]="'share-user-' + user.id">
+                <span class="share-modal__avatar" aria-hidden="true">
+                  <img [src]="user.avatarUrl" [alt]="''" (error)="onShareUserAvatarError($event, user)">
+                </span>
+                <span class="share-modal__name">{{ user.name }}</span>
+                <input
+                  [id]="'share-user-' + user.id"
+                  type="checkbox"
+                  [checked]="isShareUserSelected(user.id)"
+                  [disabled]="isSharingReview"
+                  (change)="toggleShareUser(user.id)"
+                >
+              </label>
+            }
+          }
+        </div>
+
+        <div class="review-modal__actions">
+          <button type="button" [disabled]="isSharingReview" (click)="closeShareModal()">Cancelar</button>
+          <button
+            class="review-modal__primary"
+            type="button"
+            [disabled]="!canConfirmShare"
+            (click)="confirmShareReview()"
+          >
+            {{ isSharingReview ? 'Compartiendo...' : 'Compartir reseña' }}
+          </button>
+        </div>
+      </section>
+    </div>
+  }
+</section>

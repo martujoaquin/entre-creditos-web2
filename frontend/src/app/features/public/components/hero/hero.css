@@ -1,0 +1,136 @@
+:host {
+  display: block;
+}
+
+.hero {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: calc(100svh - 86px);
+  overflow: hidden;
+  padding: 74px 56px 88px;
+  background: var(--color-background);
+  color: var(--color-text);
+  isolation: isolate;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
+  height: 220px;
+  background: linear-gradient(rgba(5, 10, 24, 0), var(--color-background));
+  pointer-events: none;
+}
+
+.hero-cinema,
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hero-cinema {
+  z-index: -2;
+  background-image: url('/images/hero-cinema.jpg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.hero-overlay {
+  z-index: -1;
+  background: linear-gradient(rgba(4, 10, 24, 0.82), rgba(4, 10, 24, 0.92));
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  width: min(720px, 100%);
+  text-align: center;
+  transform: translateY(-32px);
+}
+
+.hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 42px;
+  padding: 6px 16px;
+  border: 1px solid rgba(74, 141, 255, 0.28);
+  border-radius: var(--radius-button);
+  background: rgba(11, 18, 36, 0.42);
+  color: var(--color-primary-hover);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+}
+
+h1 {
+  margin: 0;
+  color: var(--color-text);
+  font-family: var(--font-editorial);
+  font-size: clamp(68px, 11vw, 128px);
+  font-weight: 400;
+  line-height: 0.88;
+  letter-spacing: 0;
+}
+
+h1 span {
+  display: block;
+  color: var(--color-primary);
+  font-style: italic;
+}
+
+.hero-slogan {
+  max-width: 520px;
+  margin: 44px auto 0;
+  color: var(--color-text-secondary);
+  font-family: var(--font-editorial);
+  font-size: clamp(18px, 2.2vw, 23px);
+  line-height: 1.55;
+}
+
+.hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 44px;
+}
+
+@media (max-width: 700px) {
+  .hero {
+    min-height: calc(100svh - 78px);
+    padding: 58px 24px 72px;
+  }
+
+  .hero-content {
+    transform: translateY(-18px);
+  }
+
+  .hero-kicker {
+    margin-bottom: 34px;
+    padding: 6px 12px;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+  }
+
+  .hero-slogan {
+    margin-top: 34px;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-top: 36px;
+  }
+
+  .hero-actions .btn-primary,
+  .hero-actions .btn-secondary {
+    width: min(260px, 100%);
+  }
+}

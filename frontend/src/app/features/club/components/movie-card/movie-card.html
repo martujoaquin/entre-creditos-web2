@@ -1,0 +1,20 @@
+<a
+  class="movie-card"
+  [routerLink]="['/club/peliculas', movie.id_pelicula]"
+  (click)="navigateToDetail($event)"
+  [attr.aria-label]="'Ver detalle de ' + movie.titulo"
+>
+  <div class="movie-card__image">
+    <img
+      [src]="movie.imageUrl"
+      [alt]="'Póster de ' + movie.titulo"
+      (error)="onPosterError($event)"
+    >
+  </div>
+
+  <div class="movie-card__body">
+    <h2 class="movie-card__title">{{ movie.titulo }}</h2>
+    <p class="movie-card__meta">{{ movie.director }}</p>
+    <p class="movie-card__year">{{ movie.anio }}</p>
+  </div>
+</a>

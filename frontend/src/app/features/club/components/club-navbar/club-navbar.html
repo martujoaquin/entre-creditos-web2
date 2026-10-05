@@ -1,0 +1,290 @@
+<nav class="club-navbar" aria-label="Navegación del club">
+  <div class="club-navbar-container">
+    <a class="club-brand" routerLink="/club/home" aria-label="Entre Créditos">
+      <img class="club-brand__logo" src="/images/LogoCompletoPNG.png" alt="Entre Créditos">
+    </a>
+
+    <button
+      class="club-menu-button"
+      type="button"
+      aria-controls="club-mobile-drawer"
+      [attr.aria-expanded]="isDrawerOpen"
+      [attr.aria-label]="isDrawerOpen ? 'Cerrar menú del club' : 'Abrir menú del club'"
+      (click)="toggleDrawer()"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <div class="club-nav-links" aria-label="Secciones del club">
+      <a
+        class="club-nav-link"
+        routerLink="/club/home"
+        routerLinkActive="club-nav-link--active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        Inicio
+      </a>
+      <a
+        class="club-nav-link"
+        routerLink="/club/peliculas"
+        routerLinkActive="club-nav-link--active"
+      >
+        Películas
+      </a>
+      <a
+        class="club-nav-link"
+        routerLink="/club/mis-resenas"
+        routerLinkActive="club-nav-link--active"
+      >
+        Mis reseñas
+      </a>
+    </div>
+
+    <div class="club-nav-tools">
+      <form class="club-search" role="search" (submit)="onSearchEnter($event)">
+        <label class="club-search__label" for="club-search-desktop">Buscar películas</label>
+        <svg
+          class="club-search__icon"
+          viewBox="0 0 24 24"
+          width="18"
+          height="18"
+          aria-hidden="true"
+        >
+          <path
+            d="M10.8 18.1a7.3 7.3 0 1 1 0-14.6 7.3 7.3 0 0 1 0 14.6Zm5.2-1.4 4.5 4.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="1.8"
+          />
+        </svg>
+        <input
+          id="club-search-desktop"
+          class="club-search__input"
+          type="search"
+          placeholder="Buscar películas…"
+          aria-label="Buscar películas"
+          autocomplete="off"
+          [value]="searchTerm"
+          [attr.aria-expanded]="isSearchOpen"
+          aria-controls="club-search-results-desktop"
+          (input)="onSearchInput($event)"
+          (focus)="onSearchFocus()"
+          (keydown)="onSearchKeydown($event)"
+        >
+        @if (isSearchOpen) {
+          <div id="club-search-results-desktop" class="club-search-results" role="listbox">
+            @if (isLoadingMovies) {
+              <p class="club-search-results__state">Cargando películas...</p>
+            } @else if (searchError) {
+              <p class="club-search-results__state" role="alert">No se pudo realizar la búsqueda.</p>
+            } @else if (searchResults.length === 0) {
+              <p class="club-search-results__state">No se encontraron películas.</p>
+            } @else {
+              @for (movie of searchResults; track movie.id_pelicula; let index = $index) {
+                <button
+                  class="club-search-result"
+                  type="button"
+                  role="option"
+                  [class.club-search-result--active]="selectedIndex === index"
+                  [attr.aria-selected]="selectedIndex === index"
+                  (click)="selectMovie(movie)"
+                >
+                  <img
+                    class="club-search-result__poster"
+                    [src]="movie.imageUrl"
+                    [alt]="'Póster de ' + movie.titulo"
+                    (error)="onPosterError($event, movie)"
+                  >
+                  <span class="club-search-result__content">
+                    <span class="club-search-result__title">{{ movie.titulo }}</span>
+                    <span class="club-search-result__meta">{{ movie.director }} · {{ movie.anio }}</span>
+                  </span>
+                </button>
+              }
+            }
+          </div>
+        }
+      </form>
+
+      <a
+        class="club-icon-link"
+        routerLink="/club/compartidas"
+        routerLinkActive="club-icon-link--active"
+        aria-label="Compartidas conmigo"
+        title="Compartidas conmigo"
+      >
+        <svg
+          class="club-icon-link__icon"
+          viewBox="0 0 24 24"
+          width="22"
+          height="22"
+          aria-hidden="true"
+        >
+          <path
+            d="M6.7 17.7 3.8 20v-4.4A8.1 8.1 0 0 1 2.5 11C2.5 6.6 6.8 3 12 3s9.5 3.6 9.5 8-4.3 8-9.5 8a11 11 0 0 1-5.3-1.3Z"
+            fill="none"
+            stroke="currentColor"
+            stroke-linejoin="round"
+            stroke-width="1.8"
+          />
+          <path
+            d="M8 10.5h8M8 13.5h5.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="1.8"
+          />
+        </svg>
+      </a>
+
+      @if (isAdmin) {
+        <a
+          class="club-nav-link"
+          routerLink="/admin/dashboard"
+          routerLinkActive="club-nav-link--active"
+        >
+          Administración
+        </a>
+      }
+
+      <div class="club-avatar-menu">
+        <button
+          class="club-avatar-link"
+          type="button"
+          aria-controls="club-avatar-menu"
+          [attr.aria-expanded]="isAvatarMenuOpen"
+          aria-label="Abrir menú de usuario"
+          title="Menú de usuario"
+          (click)="toggleAvatarMenu()"
+        >
+        @if (avatarUrl) {
+          <img
+            class="club-profile-avatar"
+            [src]="avatarUrl"
+            alt=""
+            aria-hidden="true"
+            (error)="onAvatarError()"
+          >
+        } @else {
+          <span class="club-profile-avatar club-profile-avatar--fallback" aria-hidden="true">
+            {{ userInitial }}
+          </span>
+        }
+        </button>
+
+        @if (isAvatarMenuOpen) {
+          <div id="club-avatar-menu" class="club-avatar-dropdown">
+            <a routerLink="/club/perfil" (click)="closeAvatarMenu()">Perfil</a>
+            <button type="button" [disabled]="isLoggingOut" (click)="logout()">
+              {{ isLoggingOut ? 'Cerrando...' : 'Cerrar sesión' }}
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  @if (isDrawerOpen) {
+    <div class="club-drawer-backdrop" role="presentation" (click)="closeDrawer()"></div>
+    <aside id="club-mobile-drawer" class="club-drawer" aria-label="Menú del club">
+      <header class="club-drawer__header">
+        <img src="/images/LogoCompletoPNG.png" alt="Entre Créditos">
+        <button type="button" aria-label="Cerrar menú del club" (click)="closeDrawer()">×</button>
+      </header>
+
+      <form class="club-search club-search--drawer" role="search" (submit)="onSearchEnter($event)">
+        <label class="club-search__label" for="club-search-drawer">Buscar películas</label>
+        <svg
+          class="club-search__icon"
+          viewBox="0 0 24 24"
+          width="18"
+          height="18"
+          aria-hidden="true"
+        >
+          <path
+            d="M10.8 18.1a7.3 7.3 0 1 1 0-14.6 7.3 7.3 0 0 1 0 14.6Zm5.2-1.4 4.5 4.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="1.8"
+          />
+        </svg>
+        <input
+          id="club-search-drawer"
+          class="club-search__input"
+          type="search"
+          placeholder="Buscar películas…"
+          aria-label="Buscar películas"
+          autocomplete="off"
+          [value]="searchTerm"
+          [attr.aria-expanded]="isSearchOpen"
+          aria-controls="club-search-results-drawer"
+          (input)="onSearchInput($event)"
+          (focus)="onSearchFocus()"
+          (keydown)="onSearchKeydown($event)"
+        >
+        @if (isSearchOpen) {
+          <div id="club-search-results-drawer" class="club-search-results" role="listbox">
+            @if (isLoadingMovies) {
+              <p class="club-search-results__state">Cargando películas...</p>
+            } @else if (searchError) {
+              <p class="club-search-results__state" role="alert">No se pudo realizar la búsqueda.</p>
+            } @else if (searchResults.length === 0) {
+              <p class="club-search-results__state">No se encontraron películas.</p>
+            } @else {
+              @for (movie of searchResults; track movie.id_pelicula; let index = $index) {
+                <button
+                  class="club-search-result"
+                  type="button"
+                  role="option"
+                  [class.club-search-result--active]="selectedIndex === index"
+                  [attr.aria-selected]="selectedIndex === index"
+                  (click)="selectMovie(movie)"
+                >
+                  <img
+                    class="club-search-result__poster"
+                    [src]="movie.imageUrl"
+                    [alt]="'Póster de ' + movie.titulo"
+                    (error)="onPosterError($event, movie)"
+                  >
+                  <span class="club-search-result__content">
+                    <span class="club-search-result__title">{{ movie.titulo }}</span>
+                    <span class="club-search-result__meta">{{ movie.director }} · {{ movie.anio }}</span>
+                  </span>
+                </button>
+              }
+            }
+          </div>
+        }
+      </form>
+
+      <nav class="club-drawer__links" aria-label="Secciones del club">
+        <a routerLink="/club/home" routerLinkActive="club-drawer__link--active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeDrawer()">Inicio</a>
+        <a routerLink="/club/peliculas" routerLinkActive="club-drawer__link--active" (click)="closeDrawer()">Películas</a>
+        <a routerLink="/club/mis-resenas" routerLinkActive="club-drawer__link--active" (click)="closeDrawer()">Mis reseñas</a>
+        <a routerLink="/club/compartidas" routerLinkActive="club-drawer__link--active" (click)="closeDrawer()">Compartidas conmigo</a>
+        @if (isAdmin) {
+          <a routerLink="/admin/dashboard" routerLinkActive="club-drawer__link--active" (click)="closeDrawer()">Administración</a>
+        }
+        <a routerLink="/club/perfil" routerLinkActive="club-drawer__link--active" (click)="closeDrawer()">Perfil</a>
+      </nav>
+
+      <div class="club-drawer__logout">
+        <button class="btn-secondary" type="button" [disabled]="isLoggingOut" (click)="logout()">
+          {{ isLoggingOut ? 'Cerrando...' : 'Cerrar sesión' }}
+        </button>
+      </div>
+
+      @if (logoutError) {
+        <p class="club-logout-error" role="alert">{{ logoutError }}</p>
+      }
+    </aside>
+  }
+
+  @if (logoutError && !isDrawerOpen) {
+    <p class="club-logout-error club-logout-error--desktop" role="alert">{{ logoutError }}</p>
+  }
+</nav>
