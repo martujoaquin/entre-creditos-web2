@@ -12,7 +12,7 @@ async function iniciarServidor() {
     try {
         await sequelize.authenticate();
         console.log('Conexión a MySQL exitosa');
-        
+
         app.listen(PORT, () => {
             console.log(`Servidor corriendo en http://localhost:${PORT}`);
         });
