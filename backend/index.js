@@ -1,7 +1,11 @@
 const express = require('express');
 const sequelize = require('./config/database');
+const generoRoutes = require('./routes/generoRoutes');
 
 const app = express();
+app.use(express.json());
+app.use('/api/generos', generoRoutes);
+
 const PORT = 3000;
 
 app.get('/', (req, res) => {
