@@ -1,2 +1,6 @@
 node_modules/
 .env
+
+# IMAGENES SUBIDAS EN RUNTIME
+backend/uploads/peliculas/*
+!backend/uploads/peliculas/default-poster.png

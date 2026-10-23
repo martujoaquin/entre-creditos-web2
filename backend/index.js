@@ -1,10 +1,14 @@
 const express = require('express');
 const sequelize = require('./config/database');
 const generoRoutes = require('./routes/generoRoutes');
+const peliculaRoutes = require('./routes/peliculaRoutes');
+const resetRoutes = require('./routes/resetRoutes');
 
 const app = express();
 app.use(express.json());
 app.use('/api/generos', generoRoutes);
+app.use('/api/peliculas', peliculaRoutes);
+app.use('/api/reset', resetRoutes);
 
 const PORT = 3000;
 
