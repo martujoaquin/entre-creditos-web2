@@ -3,12 +3,19 @@ const sequelize = require('./config/database');
 const generoRoutes = require('./routes/generoRoutes');
 const peliculaRoutes = require('./routes/peliculaRoutes');
 const resetRoutes = require('./routes/resetRoutes');
+const usuarioRoutes = require('./routes/usuarioRoutes');
+const resenaRoutes = require('./routes/resenaRoutes');
+const resenaCompartidaRoutes = require('./routes/resenaCompartidaRoutes');
 
 const app = express();
 app.use(express.json());
 app.use('/api/generos', generoRoutes);
 app.use('/api/peliculas', peliculaRoutes);
 app.use('/api/reset', resetRoutes);
+app.use('/api/usuarios', usuarioRoutes);
+app.use('/api', resenaCompartidaRoutes);
+app.use('/api/resenas', resenaRoutes);
+app.use('/api/peliculas/:id/resenas', resenaRoutes);
 
 const PORT = 3000;
 
