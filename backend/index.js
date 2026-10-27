@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const sequelize = require('./config/database');
 const generoRoutes = require('./routes/generoRoutes');
@@ -6,6 +8,7 @@ const resetRoutes = require('./routes/resetRoutes');
 const usuarioRoutes = require('./routes/usuarioRoutes');
 const resenaRoutes = require('./routes/resenaRoutes');
 const resenaCompartidaRoutes = require('./routes/resenaCompartidaRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 app.use(express.json());
@@ -16,6 +19,7 @@ app.use('/api/usuarios', usuarioRoutes);
 app.use('/api', resenaCompartidaRoutes);
 app.use('/api/resenas', resenaRoutes);
 app.use('/api/peliculas/:id/resenas', resenaRoutes);
+app.use('/api/auth', authRoutes);
 
 const PORT = 3000;
 
