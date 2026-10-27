@@ -1,4 +1,5 @@
 const express = require('express');
+const authMiddleware = require('../middleware/authMiddleware');
 const {
     obtenerUsuariosDisponibles,
     obtenerCompartidas,
@@ -7,8 +8,8 @@ const {
 
 const router = express.Router();
 
-router.get('/usuarios/compartir', obtenerUsuariosDisponibles);
-router.get('/resenas-compartidas', obtenerCompartidas);
-router.post('/resenas-compartidas', compartirResena);
+router.get('/usuarios/compartir', authMiddleware, obtenerUsuariosDisponibles);
+router.get('/resenas-compartidas', authMiddleware, obtenerCompartidas);
+router.post('/resenas-compartidas', authMiddleware, compartirResena);
 
 module.exports = router;

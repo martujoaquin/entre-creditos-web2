@@ -103,7 +103,17 @@ const actualizarUsuario = async (req, res) => {
             }
         }
 
-        // En Etapa 6 deberán aplicarse aquí las reglas sobre la propia cuenta del administrador.
+        const administradorActual = Number(req.user?.id_usuario) === id;
+        const esAdministradorActual = req.user?.es_admin === 1 || req.user?.es_admin === true;
+
+        if (administradorActual && esAdministradorActual && cambios.es_admin === 0) {
+            return res.status(400).json({ mensaje: 'No puede quitarse a sí mismo el rol de administrador' });
+        }
+
+        if (administradorActual && esAdministradorActual && cambios.activo === 0) {
+            return res.status(400).json({ mensaje: 'No puede desactivar su propia cuenta' });
+        }
+
         await usuario.update(cambios);
 
         return res.json({

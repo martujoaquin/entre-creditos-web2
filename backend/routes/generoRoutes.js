@@ -1,4 +1,6 @@
 const express = require('express');
+const authMiddleware = require('../middleware/authMiddleware');
+const adminMiddleware = require('../middleware/adminMiddleware');
 const {
     obtenerGeneros,
     crearGenero,
@@ -8,9 +10,9 @@ const {
 
 const router = express.Router();
 
-router.get('/', obtenerGeneros);
-router.post('/', crearGenero);
-router.patch('/:id', actualizarGenero);
-router.delete('/:id', eliminarGenero);
+router.get('/', authMiddleware, obtenerGeneros);
+router.post('/', authMiddleware, adminMiddleware, crearGenero);
+router.patch('/:id', authMiddleware, adminMiddleware, actualizarGenero);
+router.delete('/:id', authMiddleware, adminMiddleware, eliminarGenero);
 
 module.exports = router;

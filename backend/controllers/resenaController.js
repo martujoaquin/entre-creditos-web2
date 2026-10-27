@@ -38,15 +38,20 @@ const validarDatosResena = (body, requierePelicula) => {
         return { error: 'La película es obligatoria' };
     }
 
-    if (contenido === '') {
+    const esActualizacion = !requierePelicula;
+    const tieneContenido = Object.prototype.hasOwnProperty.call(body, 'contenido');
+    const tienePuntuacion = Object.prototype.hasOwnProperty.call(body, 'puntuacion');
+    const tieneFrase = Object.prototype.hasOwnProperty.call(body, 'frase_destacada');
+
+    if ((!esActualizacion || tieneContenido) && contenido === '') {
         return { error: 'El contenido es obligatorio' };
     }
 
-    if (!idValido(puntuacion)) {
+    if ((!esActualizacion || tienePuntuacion) && !idValido(puntuacion)) {
         return { error: 'La puntuación es obligatoria' };
     }
 
-    if (puntuacion < 1 || puntuacion > 5) {
+    if (tienePuntuacion && (puntuacion < 1 || puntuacion > 5)) {
         return { error: 'La puntuación debe estar entre 1 y 5' };
     }
 
@@ -54,14 +59,18 @@ const validarDatosResena = (body, requierePelicula) => {
         return { error: 'La frase destacada no puede superar los 220 caracteres' };
     }
 
-    return {
-        datos: {
-            id_pelicula: idPelicula,
-            frase_destacada: frase === '' ? null : frase,
-            contenido,
-            puntuacion
-        }
-    };
+    const datos = {};
+
+    if (!esActualizacion || tieneContenido) datos.contenido = contenido;
+    if (!esActualizacion || tieneFrase) datos.frase_destacada = frase === '' ? null : frase;
+    if (!esActualizacion || tienePuntuacion) datos.puntuacion = puntuacion;
+    if (!esActualizacion) datos.id_pelicula = idPelicula;
+
+    if (esActualizacion && Object.keys(datos).length === 0) {
+        return { error: 'No se recibieron datos para actualizar' };
+    }
+
+    return { datos };
 };
 
 const obtenerResenasLanding = async (req, res) => {
@@ -222,11 +231,7 @@ const actualizarResena = async (req, res) => {
         const esAdmin = req.user.es_admin === 1 || req.user.es_admin === true;
         if (!esAdmin && resena.id_usuario !== req.user.id_usuario) return res.status(403).json({ mensaje: 'No tiene permisos para editar esta reseña' });
 
-        await resena.update({
-            frase_destacada: validacion.datos.frase_destacada,
-            contenido: validacion.datos.contenido,
-            puntuacion: validacion.datos.puntuacion
-        });
+        await resena.update(validacion.datos);
         await resena.reload({ attributes: ['id_resena', 'id_usuario', 'id_pelicula', 'frase_destacada', 'contenido', 'puntuacion', 'fecha_creacion', 'fecha_modificacion'], include: [autorInclude] });
 
         return res.json({ success: true, mensaje: 'Reseña actualizada correctamente', resena });

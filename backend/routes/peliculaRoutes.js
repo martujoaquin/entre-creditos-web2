@@ -1,11 +1,13 @@
 const express = require('express');
+const authMiddleware = require('../middleware/authMiddleware');
+const adminMiddleware = require('../middleware/adminMiddleware');
 const { obtenerPeliculas, crearPelicula, actualizarPelicula } = require('../controllers/peliculaController');
 const { upload } = require('../middleware/peliculaUpload');
 const multer = require('multer');
 
 const router = express.Router();
 
-router.get('/', obtenerPeliculas);
+router.get('/', authMiddleware, obtenerPeliculas);
 const recibirImagen = (req, res, next) => upload.single('imagen')(req, res, (error) => {
     if (!error) return next();
     if (error instanceof multer.MulterError && error.code === 'LIMIT_FILE_SIZE') {
@@ -14,7 +16,7 @@ const recibirImagen = (req, res, next) => upload.single('imagen')(req, res, (err
     return res.status(400).json({ mensaje: 'El formato de imagen no es válido' });
 });
 
-router.post('/', recibirImagen, crearPelicula);
-router.patch('/:id', recibirImagen, actualizarPelicula);
+router.post('/', authMiddleware, adminMiddleware, recibirImagen, crearPelicula);
+router.patch('/:id', authMiddleware, adminMiddleware, recibirImagen, actualizarPelicula);
 
 module.exports = router;
