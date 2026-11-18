@@ -9,9 +9,13 @@ const usuarioRoutes = require('./routes/usuarioRoutes');
 const resenaRoutes = require('./routes/resenaRoutes');
 const resenaCompartidaRoutes = require('./routes/resenaCompartidaRoutes');
 const authRoutes = require('./routes/authRoutes');
+const cors = require('cors');
 
 const app = express();
 app.use(express.json());
+app.use(cors({
+    origin: 'http://localhost:5173'
+}));
 app.use('/uploads', express.static('uploads'));
 app.use('/api/generos', generoRoutes);
 app.use('/api/peliculas', peliculaRoutes);
