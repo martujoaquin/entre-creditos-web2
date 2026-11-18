@@ -1,0 +1,2 @@
+import React from 'react';
+import { Link, Outlet } from 'react-router-dom'; export default function LandingLayout() { return <><header className="site-header"><Link className="brand" to="/"><img src="/images/LogoCompletoPNG.png" alt="Entre Créditos" /></Link><nav className="main-nav"><a href="#como-funciona">Cómo funciona</a><Link to="/login">Iniciar sesión</Link><Link className="nav-cta" to="/register">Registrarse</Link></nav></header><Outlet /></>; }

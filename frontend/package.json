@@ -8,9 +8,10 @@
   },
   "private": true,
   "dependencies": {
-    "vite": "latest",
+    "axios": "^1.21.1",
     "react": "latest",
-    "react-dom": "latest"
-  },
-  "devDependencies": {}
+    "react-dom": "latest",
+    "react-router-dom": "^7.18.6",
+    "vite": "latest"
+  }
 }

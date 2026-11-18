@@ -1,0 +1,3 @@
+import React from 'react';
+import { NavLink, Outlet } from 'react-router-dom'; import { useAuth } from '../context/AuthContext';
+export default function AdminLayout() { const { logout } = useAuth(); return <div className="app-layout"><header className="app-header"><NavLink className="brand" to="/admin"><img src="/images/LogoCompletoPNG.png" alt="Entre Créditos" /></NavLink><nav className="app-nav"><NavLink to="/admin/usuarios">Usuarios</NavLink><NavLink to="/admin/peliculas">Películas</NavLink><NavLink to="/admin/generos">Géneros</NavLink><NavLink to="/admin/resenas">Reseñas</NavLink><button type="button" onClick={logout}>Cerrar sesión</button></nav></header><main className="app-content"><Outlet /></main></div>; }
